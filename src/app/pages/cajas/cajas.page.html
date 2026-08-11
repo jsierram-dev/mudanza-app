@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/mudanzas"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ tituloMudanza() }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @if (cajas().length === 0) {
+    <p class="empty">Todavía no hay cajas en esta mudanza.</p>
+  }
+
+  <div class="grid">
+    @for (caja of cajas(); track caja.id) {
+      <button class="card" type="button" (click)="abrir(caja)">
+        <span class="crate-badge">{{ formatNumero(caja.numero) }}</span>
+        <span class="cover">
+          <ion-icon name="image-outline"></ion-icon>
+        </span>
+        <span class="cname">{{ caja.habitacionDestino || caja.nombre || 'Sin habitación' }}</span>
+        <span class="stat-pill" [class.is-on]="estadoActivo(caja.estado)">
+          <span class="led"></span>{{ formatEstado(caja.estado) }}
+        </span>
+      </button>
+    }
+  </div>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="nuevaCaja()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

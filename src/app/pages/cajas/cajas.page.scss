@@ -1,0 +1,48 @@
+.empty {
+  color: var(--mv-muted);
+  font-size: 0.9rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.7rem;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  padding: 0.5rem;
+  background: var(--mv-panel);
+  border: 1px solid var(--mv-line);
+  border-radius: 6px;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+}
+
+.card .crate-badge {
+  position: absolute;
+  top: -6px;
+  left: -6px;
+}
+
+.cover {
+  width: 100%;
+  height: 64px;
+  border-radius: 4px;
+  background: var(--mv-panel-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: var(--mv-line);
+}
+
+.cname {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
