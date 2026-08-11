@@ -1,0 +1,7 @@
+{
+  "name": "mudanza-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
