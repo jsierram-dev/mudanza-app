@@ -23,6 +23,11 @@ export class CajaService {
     return todas.filter((c) => c.mudanzaId === mudanzaId);
   }
 
+  async getById(cajaId: string): Promise<Caja | undefined> {
+    const todas = await this.store.getAll();
+    return todas.find((c) => c.id === cajaId);
+  }
+
   async crear(
     mudanzaId: string,
     datos: Partial<Pick<Caja, 'nombre' | 'habitacionDestino' | 'fotoPortadaUri'>> = {},

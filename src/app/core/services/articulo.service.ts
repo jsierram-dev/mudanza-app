@@ -29,6 +29,11 @@ export class ArticuloService {
     return this.store.getAll();
   }
 
+  async getById(articuloId: string): Promise<Articulo | undefined> {
+    const todos = await this.store.getAll();
+    return todos.find((a) => a.id === articuloId);
+  }
+
   async crear(datos: DatosNuevoArticulo): Promise<Articulo> {
     const todos = await this.store.getAll();
     const nuevo: Articulo = {
