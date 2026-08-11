@@ -6,11 +6,13 @@ import { Directory, Filesystem } from '@capacitor/filesystem';
 @Injectable({ providedIn: 'root' })
 export class FotoService {
   /**
-   * Abre la cámara, captura una foto y la guarda de forma permanente en el
-   * almacenamiento del dispositivo (Directory.Data). Devuelve solo el nombre
-   * de archivo relativo (no un URI completo) — alcanza para reconstruir
-   * cualquier operación futura (leer, mostrar, borrar) contra Directory.Data,
-   * y evita arrastrar un URI con forma distinta en cada plataforma.
+   * Abre un selector (cámara O archivo/galería — CameraSource.Prompt le deja
+   * elegir al usuario, pedido explícito: "revisalo con cámara y archivo
+   * adjunto") y guarda la foto de forma permanente en el almacenamiento del
+   * dispositivo (Directory.Data). Devuelve solo el nombre de archivo relativo
+   * (no un URI completo) — alcanza para reconstruir cualquier operación
+   * futura (leer, mostrar, borrar) contra Directory.Data, y evita arrastrar
+   * un URI con forma distinta en cada plataforma.
    *
    * Calidad reducida a propósito (70) — ver ROADMAP-mudanza.md, "no comerse
    * el almacenamiento del teléfono con fotos a resolución completa".
@@ -18,7 +20,10 @@ export class FotoService {
   async capturarYGuardar(): Promise<string> {
     const foto = await Camera.getPhoto({
       resultType: CameraResultType.Base64,
-      source: CameraSource.Camera,
+      source: CameraSource.Prompt,
+      promptLabelHeader: 'Foto del artículo',
+      promptLabelPhoto: 'Elegir de la galería',
+      promptLabelPicture: 'Tomar foto',
       quality: 70,
     });
 
