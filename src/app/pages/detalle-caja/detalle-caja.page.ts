@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   ActionSheetController,
@@ -17,6 +17,7 @@ import {
 import type { ViewWillEnter } from '@ionic/angular/standalone';
 import { Articulo, Caja, EstadoCaja } from '../../core/models';
 import { ArticuloService, AsignacionCajaService, CajaService, FOTO_PORTADA_DEFAULT, FotoService } from '../../core/services';
+import { formatPeso } from '../../core/utils/peso';
 import { FotoComponent } from '../../shared/foto/foto.component';
 
 interface ArticuloEnCaja {
@@ -59,6 +60,11 @@ export class DetalleCajaPage implements ViewWillEnter {
 
   readonly caja = signal<Caja | undefined>(undefined);
   readonly articulos = signal<ArticuloEnCaja[]>([]);
+
+  /** Suma pesoKg × cantidad de lo ya cargado — sin llamadas extra al service. */
+  readonly pesoTotalTexto = computed(() =>
+    formatPeso(this.articulos().reduce((total, item) => total + (item.articulo.pesoKg ?? 0) * item.cantidad, 0)),
+  );
 
   /**
    * Ionic mantiene vivas las páginas ya visitadas para las transiciones

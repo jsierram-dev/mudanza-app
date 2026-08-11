@@ -22,6 +22,7 @@
 
 .chips {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
   margin-bottom: 1rem;
 }
@@ -34,6 +35,12 @@
   border: 1px solid var(--mv-line);
   background: var(--mv-panel);
   color: var(--mv-ink);
+}
+
+/* solo informativo, no abre nada al tocarlo — distinto de los otros 2 chips */
+.peso-chip {
+  border-style: dashed;
+  color: var(--mv-muted);
 }
 
 .section-label {

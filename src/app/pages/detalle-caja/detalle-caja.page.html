@@ -28,6 +28,9 @@
       <button class="chip" type="button" (click)="editarHabitacion()">
         {{ cajaActual.habitacionDestino || 'Sin habitación' }}
       </button>
+      @if (pesoTotalTexto(); as peso) {
+        <span class="chip peso-chip">{{ peso }}</span>
+      }
     </div>
 
     <p class="section-label">Artículos ({{ articulos().length }})</p>

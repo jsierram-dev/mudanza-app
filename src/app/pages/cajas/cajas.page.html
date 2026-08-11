@@ -13,20 +13,23 @@
   }
 
   <div class="grid">
-    @for (caja of cajas(); track caja.id) {
-      <button class="card" type="button" (click)="abrir(caja)">
-        <span class="crate-badge">{{ formatNumero(caja.numero) }}</span>
+    @for (item of cajas(); track item.caja.id) {
+      <button class="card" type="button" (click)="abrir(item.caja)">
+        <span class="crate-badge">{{ formatNumero(item.caja.numero) }}</span>
         <span class="cover">
-          @if (esFotoPorDefecto(caja.fotoPortadaUri)) {
+          @if (esFotoPorDefecto(item.caja.fotoPortadaUri)) {
             <ion-icon name="image-outline"></ion-icon>
           } @else {
-            <app-foto [uri]="caja.fotoPortadaUri" [alt]="'Caja #' + caja.numero" />
+            <app-foto [uri]="item.caja.fotoPortadaUri" [alt]="'Caja #' + item.caja.numero" />
           }
         </span>
-        <span class="cname">{{ caja.habitacionDestino || caja.nombre || 'Sin habitación' }}</span>
-        <span class="stat-pill" [class.is-on]="estadoActivo(caja.estado)">
-          <span class="led"></span>{{ formatEstado(caja.estado) }}
+        <span class="cname">{{ item.caja.habitacionDestino || item.caja.nombre || 'Sin habitación' }}</span>
+        <span class="stat-pill" [class.is-on]="estadoActivo(item.caja.estado)">
+          <span class="led"></span>{{ formatEstado(item.caja.estado) }}
         </span>
+        @if (formatPeso(item.pesoKg); as peso) {
+          <span class="peso">{{ peso }}</span>
+        }
       </button>
     }
   </div>

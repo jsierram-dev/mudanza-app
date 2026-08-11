@@ -16,7 +16,13 @@ import {
 import type { ViewWillEnter } from '@ionic/angular/standalone';
 import { Caja, EstadoCaja } from '../../core/models';
 import { CajaService, FOTO_PORTADA_DEFAULT, MudanzaService } from '../../core/services';
+import { formatPeso } from '../../core/utils/peso';
 import { FotoComponent } from '../../shared/foto/foto.component';
+
+interface CajaConPeso {
+  caja: Caja;
+  pesoKg: number;
+}
 
 @Component({
   selector: 'app-cajas',
@@ -45,7 +51,7 @@ export class CajasPage implements ViewWillEnter {
   private readonly mudanzaId = this.route.snapshot.paramMap.get('mudanzaId')!;
 
   readonly tituloMudanza = signal('');
-  readonly cajas = signal<Caja[]>([]);
+  readonly cajas = signal<CajaConPeso[]>([]);
 
   // Ionic reusa instancias de página ya visitadas — ver la nota en
   // DetalleCajaPage. ionViewWillEnter corre siempre, constructor no.
@@ -73,11 +79,20 @@ export class CajasPage implements ViewWillEnter {
       this.cajaService.getPorMudanza(this.mudanzaId),
     ]);
     this.tituloMudanza.set(mudanza?.nombre ?? 'Mudanza');
-    this.cajas.set(cajas.sort((a, b) => a.numero - b.numero));
+
+    const ordenadas = cajas.sort((a, b) => a.numero - b.numero);
+    const conPeso = await Promise.all(
+      ordenadas.map(async (caja): Promise<CajaConPeso> => ({ caja, pesoKg: await this.cajaService.pesoTotalKg(caja.id) })),
+    );
+    this.cajas.set(conPeso);
   }
 
   abrir(caja: Caja): void {
     this.router.navigate(['/mudanzas', this.mudanzaId, 'cajas', caja.id]);
+  }
+
+  formatPeso(kg: number): string {
+    return formatPeso(kg);
   }
 
   formatNumero(numero: number): string {
