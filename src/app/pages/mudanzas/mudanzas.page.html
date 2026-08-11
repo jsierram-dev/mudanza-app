@@ -1,0 +1,31 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Mudanza</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <p class="section-label">Tus mudanzas</p>
+
+  @if (mudanzas().length === 0) {
+    <p class="empty">Todavía no creaste ninguna mudanza.</p>
+  }
+
+  <div class="lista">
+    @for (mudanza of mudanzas(); track mudanza.id) {
+      <button class="fila" type="button" (click)="abrir(mudanza)">
+        <span class="icono"><ion-icon name="cube-outline"></ion-icon></span>
+        <span class="info">
+          <span class="nombre">{{ mudanza.nombre }}</span>
+          <span class="meta">Creada {{ mudanza.fechaCreacion | date: 'd MMM y' }}</span>
+        </span>
+      </button>
+    }
+  </div>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="nuevaMudanza()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>
