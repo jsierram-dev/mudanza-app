@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-searchbar
+      placeholder="Buscar artículo..."
+      [debounce]="250"
+      (ionInput)="buscar($event)"
+    ></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="chips">
+    <button class="chip" type="button" [class.selected]="soloFragiles()" (click)="toggleFragiles()">Frágil</button>
+    <button class="chip" type="button" [class.selected]="soloEsenciales()" (click)="toggleEsenciales()">Esencial</button>
+  </div>
+
+  @if (texto().trim() && resultados().length === 0) {
+    <p class="empty">Sin resultados para "{{ texto() }}".</p>
+  }
+
+  <div class="lista">
+    @for (resultado of resultados(); track resultado.articulo.id) {
+      <div class="fila">
+        <span class="thumb"><app-foto [uri]="resultado.articulo.fotoUri" [alt]="resultado.articulo.nombre" /></span>
+        <span class="info">
+          <span class="nombre">{{ resultado.articulo.nombre }}</span>
+          @if (resultado.ubicaciones.length === 0) {
+            <span class="meta sin-caja">Sin asignar todavía</span>
+          }
+          @for (ubicacion of resultado.ubicaciones; track ubicacion.numeroCaja) {
+            <span class="meta">
+              En: Caja #{{ ubicacion.numeroCaja }}
+              @if (ubicacion.habitacion) { · {{ ubicacion.habitacion }} }
+              — {{ ubicacion.cantidad }} ud
+            </span>
+          }
+        </span>
+      </div>
+    }
+  </div>
+</ion-content>

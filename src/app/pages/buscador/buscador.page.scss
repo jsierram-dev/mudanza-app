@@ -1,0 +1,73 @@
+.chips {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.chip {
+  font-family: var(--mv-font-display);
+  font-size: 0.75rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 5px;
+  border: 1.5px solid var(--mv-line);
+  background: var(--mv-panel);
+  color: var(--mv-muted);
+
+  &.selected {
+    border-color: var(--mv-accent);
+    background: var(--mv-accent);
+    color: var(--mv-accent-ink);
+    font-weight: 700;
+  }
+}
+
+.empty {
+  color: var(--mv-muted);
+  font-size: 0.9rem;
+}
+
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.fila {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 0.55rem;
+  background: var(--mv-panel);
+  border: 1px solid var(--mv-line);
+  border-radius: 6px;
+}
+
+.thumb {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 5px;
+  overflow: hidden;
+  background: var(--mv-panel-2);
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.nombre {
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+
+.meta {
+  font-size: 0.76rem;
+  color: var(--mv-muted);
+}
+
+.sin-caja {
+  font-style: italic;
+}
