@@ -1,0 +1,99 @@
+.foto-grande {
+  width: 100%;
+  height: 220px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--mv-panel-2);
+  border: 1px solid var(--mv-line);
+  margin-bottom: 1rem;
+}
+
+.nombre {
+  font-size: 1.15rem;
+  margin: 0 0 0.5rem;
+}
+
+.flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.flag {
+  font-family: var(--mv-font-display);
+  font-size: 0.72rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 5px;
+  border: 1px solid var(--mv-line);
+  color: var(--mv-muted);
+}
+
+.meta {
+  font-size: 0.82rem;
+  color: var(--mv-muted);
+  margin: 0 0 1.25rem;
+}
+
+.section-label {
+  font-family: var(--mv-font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--mv-muted);
+  margin: 0 0 0.5rem;
+}
+
+.chips-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+}
+
+.chip {
+  font-family: var(--mv-font-display);
+  font-size: 0.72rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 5px;
+  border: 1px solid var(--mv-line);
+  background: var(--mv-panel);
+  color: var(--mv-ink);
+}
+
+.empty {
+  color: var(--mv-muted);
+  font-size: 0.88rem;
+}
+
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  background: var(--mv-panel);
+  border: 1px solid var(--mv-line);
+  border-radius: 6px;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+}
+
+.nombre-caja {
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.cantidad {
+  font-family: var(--mv-font-display);
+  font-size: 0.78rem;
+  color: var(--mv-muted);
+}
