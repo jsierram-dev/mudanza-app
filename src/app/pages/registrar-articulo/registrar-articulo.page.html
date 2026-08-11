@@ -1,0 +1,94 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancelar()">
+        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Nuevo artículo</ion-title>
+    <ion-buttons slot="end">
+      @if (caja(); as cajaActual) {
+        <span class="crate-badge">{{ formatNumero(cajaActual.numero) }}</span>
+      }
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @if (paso() === 'camara') {
+    <div class="paso-camara">
+      <div class="viewfinder-frame viewfinder">
+        <span class="corner tl"></span><span class="corner tr"></span>
+        <span class="corner bl"></span><span class="corner br"></span>
+        <ion-icon name="image-outline"></ion-icon>
+        <span>Encuadra el objeto</span>
+      </div>
+      <button class="shutter" type="button" (click)="tomarFoto()" [disabled]="capturando()">
+        <ion-icon name="camera-outline"></ion-icon>
+      </button>
+      <p class="hint">Toma una foto del artículo</p>
+    </div>
+  } @else {
+    <div class="paso-formulario">
+      <div class="foto-actual">
+        <div class="thumb-wrap">
+          <span class="tape-strip sm"></span>
+          @if (fotoUri(); as uri) {
+            <app-foto [uri]="uri" alt="Foto del artículo" />
+          }
+        </div>
+        <button class="chip" type="button" (click)="tomarFoto()">Cambiar foto</button>
+      </div>
+
+      <label class="field-label" for="campo-nombre">Nombre</label>
+      <ion-input id="campo-nombre" fill="outline" placeholder="Ej. Sartén grande" [value]="nombre()" (ionInput)="actualizarNombre($event)"></ion-input>
+
+      <label class="field-label" for="campo-peso">Peso (kg) · opcional</label>
+      <ion-input id="campo-peso" type="number" fill="outline" placeholder="0.0" [value]="pesoKg()" (ionInput)="actualizarPeso($event)"></ion-input>
+
+      <div class="toggle-row">
+        <span>Frágil</span>
+        <ion-toggle [checked]="fragil()" (ionChange)="actualizarFragil($event)"></ion-toggle>
+      </div>
+      <div class="toggle-row">
+        <span>Esencial</span>
+        <ion-toggle [checked]="esencial()" (ionChange)="actualizarEsencial($event)"></ion-toggle>
+      </div>
+
+      <span class="field-label">Categorías</span>
+      <div class="chips-wrap">
+        @for (categoria of categorias(); track categoria.id) {
+          <button
+            class="chip"
+            type="button"
+            [class.selected]="categoriasSeleccionadas().has(categoria.id)"
+            (click)="toggleCategoria(categoria.id)"
+          >
+            {{ categoria.nombre }}
+          </button>
+        }
+      </div>
+
+      <hr class="divider" />
+
+      <span class="field-label">Asignar a caja</span>
+      @if (caja(); as cajaActual) {
+        <div class="asignar-fila" [class.disabled]="sinAsignar()">
+          <span>Caja #{{ cajaActual.numero }} · {{ cajaActual.habitacionDestino || 'sin habitación' }}</span>
+          <div class="stepper">
+            <button type="button" (click)="decrementarCantidad()" [disabled]="sinAsignar()">−</button>
+            <span>{{ cantidad() }}</span>
+            <button type="button" (click)="incrementarCantidad()" [disabled]="sinAsignar()">+</button>
+          </div>
+        </div>
+      }
+      <button class="chip ghost" type="button" (click)="toggleSinAsignar()">
+        {{ sinAsignar() ? '✓ ' : '' }}dejar sin asignar por ahora
+      </button>
+
+      <button class="btn-primario" type="button" (click)="guardar()" [disabled]="!nombre().trim()">
+        Guardar artículo
+      </button>
+    </div>
+  }
+</ion-content>
