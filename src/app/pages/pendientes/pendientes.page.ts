@@ -1,7 +1,17 @@
 import { DatePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { ActionSheetController, IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs/operators';
+import {
+  ActionSheetController,
+  IonContent,
+  IonFab,
+  IonFabButton,
+  IonHeader,
+  IonIcon,
+  IonTitle,
+  IonToolbar,
+} from '@ionic/angular/standalone';
 import type { ViewWillEnter } from '@ionic/angular/standalone';
 import { Articulo } from '../../core/models';
 import { ArticuloService, AsignacionCajaService, CajaService } from '../../core/services';
@@ -11,10 +21,11 @@ import { FotoComponent } from '../../shared/foto/foto.component';
   selector: 'app-pendientes',
   templateUrl: './pendientes.page.html',
   styleUrl: './pendientes.page.scss',
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, DatePipe, FotoComponent],
+  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton, IonIcon, DatePipe, FotoComponent],
 })
 export class PendientesPage implements ViewWillEnter {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly articuloService = inject(ArticuloService);
   private readonly cajaService = inject(CajaService);
   private readonly asignacionCajaService = inject(AsignacionCajaService);
@@ -24,8 +35,16 @@ export class PendientesPage implements ViewWillEnter {
 
   readonly pendientes = signal<Articulo[]>([]);
 
-  // Ionic reusa instancias de página ya visitadas — ver la nota en
-  // DetalleCajaPage. ionViewWillEnter corre siempre, constructor no.
+  constructor() {
+    // Ver el comentario largo en CajasPage: esta página vive en <ion-tabs> y
+    // ionViewWillEnter no dispara al volver desde fuera de las pestañas.
+    this.router.events
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe((e) => {
+        if (e.urlAfterRedirects.endsWith(`/${this.mudanzaId}/pendientes`)) this.cargar();
+      });
+  }
+
   ionViewWillEnter(): void {
     this.cargar();
   }
@@ -60,5 +79,14 @@ export class PendientesPage implements ViewWillEnter {
       ],
     });
     await sheet.present();
+  }
+
+  /** Sin cajaId — el usuario elige adentro (o lo deja sin asignar). */
+  nuevoArticulo(): void {
+    this.router.navigate(['/mudanzas', this.mudanzaId, 'nuevo-articulo']);
+  }
+
+  verArticulo(articuloId: string): void {
+    this.router.navigate(['/mudanzas', this.mudanzaId, 'articulos', articuloId]);
   }
 }

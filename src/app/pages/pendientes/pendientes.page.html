@@ -11,7 +11,7 @@
 
   <div class="lista">
     @for (articulo of pendientes(); track articulo.id) {
-      <div class="fila">
+      <div class="fila" (click)="verArticulo(articulo.id)">
         <span class="thumb">
           <app-foto [uri]="articulo.fotoUri" [alt]="articulo.nombre" />
         </span>
@@ -19,8 +19,14 @@
           <span class="nombre">{{ articulo.nombre }}</span>
           <span class="meta">Registrado {{ articulo.fechaRegistro | date: 'd MMM' }}</span>
         </span>
-        <button class="chip" type="button" (click)="asignar(articulo)">Asignar</button>
+        <button class="chip" type="button" (click)="asignar(articulo); $event.stopPropagation()">Asignar</button>
       </div>
     }
   </div>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="nuevoArticulo()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>
