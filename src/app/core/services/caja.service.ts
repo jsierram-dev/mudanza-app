@@ -4,8 +4,13 @@ import { AsignacionCajaService } from './asignacion-caja.service';
 import { CollectionStore } from './collection-store';
 import { StorageService } from './storage.service';
 
-/** Asset bundleado por defecto — ver ROADMAP-mudanza.md, sección "Diseños de caja". */
-const FOTO_PORTADA_DEFAULT = 'assets/cajas/estandar.png';
+/**
+ * Asset bundleado por defecto — ver ROADMAP-mudanza.md, sección "Diseños de
+ * caja". Exportado para que las pantallas puedan distinguir "todavía no
+ * tiene foto propia" (mostrar placeholder) de "ya tiene una foto real"
+ * (mostrarla con <app-foto>).
+ */
+export const FOTO_PORTADA_DEFAULT = 'assets/cajas/estandar.png';
 
 @Injectable({ providedIn: 'root' })
 export class CajaService {

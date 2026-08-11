@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import {
   AlertController,
   IonBackButton,
@@ -14,13 +15,25 @@ import {
 } from '@ionic/angular/standalone';
 import type { ViewWillEnter } from '@ionic/angular/standalone';
 import { Caja, EstadoCaja } from '../../core/models';
-import { CajaService, MudanzaService } from '../../core/services';
+import { CajaService, FOTO_PORTADA_DEFAULT, MudanzaService } from '../../core/services';
+import { FotoComponent } from '../../shared/foto/foto.component';
 
 @Component({
   selector: 'app-cajas',
   templateUrl: './cajas.page.html',
   styleUrl: './cajas.page.scss',
-  imports: [IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton, IonContent, IonFab, IonFabButton, IonIcon],
+  imports: [
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonButtons,
+    IonBackButton,
+    IonContent,
+    IonFab,
+    IonFabButton,
+    IonIcon,
+    FotoComponent,
+  ],
 })
 export class CajasPage implements ViewWillEnter {
   private readonly route = inject(ActivatedRoute);
@@ -36,6 +49,20 @@ export class CajasPage implements ViewWillEnter {
 
   // Ionic reusa instancias de página ya visitadas — ver la nota en
   // DetalleCajaPage. ionViewWillEnter corre siempre, constructor no.
+  constructor() {
+    // ionViewWillEnter (abajo) no alcanza acá: esta página vive dentro de
+    // <ion-tabs>, y cuando se navega a una pantalla fuera de las pestañas
+    // (ej. Detalle de caja) y se vuelve, Ionic la re-muestra sin volver a
+    // disparar el lifecycle (sí lo hace para páginas normales fuera de
+    // pestañas — comprobado). Router.events es la fuente de verdad que sí
+    // dispara siempre, sin depender del cacheo interno de Ionic.
+    this.router.events
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe((e) => {
+        if (e.urlAfterRedirects.endsWith(`/${this.mudanzaId}/cajas`)) this.cargar();
+      });
+  }
+
   ionViewWillEnter(): void {
     this.cargar();
   }
@@ -64,6 +91,10 @@ export class CajasPage implements ViewWillEnter {
   /** vacía es el único estado sin ninguna actividad todavía — el resto se marca como "en curso". */
   estadoActivo(estado: EstadoCaja): boolean {
     return estado !== 'vacia';
+  }
+
+  esFotoPorDefecto(fotoPortadaUri: string): boolean {
+    return fotoPortadaUri === FOTO_PORTADA_DEFAULT;
   }
 
   async nuevaCaja(): Promise<void> {

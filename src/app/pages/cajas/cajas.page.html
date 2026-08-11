@@ -17,7 +17,11 @@
       <button class="card" type="button" (click)="abrir(caja)">
         <span class="crate-badge">{{ formatNumero(caja.numero) }}</span>
         <span class="cover">
-          <ion-icon name="image-outline"></ion-icon>
+          @if (esFotoPorDefecto(caja.fotoPortadaUri)) {
+            <ion-icon name="image-outline"></ion-icon>
+          } @else {
+            <app-foto [uri]="caja.fotoPortadaUri" [alt]="'Caja #' + caja.numero" />
+          }
         </span>
         <span class="cname">{{ caja.habitacionDestino || caja.nombre || 'Sin habitación' }}</span>
         <span class="stat-pill" [class.is-on]="estadoActivo(caja.estado)">

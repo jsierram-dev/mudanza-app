@@ -12,10 +12,11 @@ import {
   IonIcon,
   IonTitle,
   IonToolbar,
+  ToastController,
 } from '@ionic/angular/standalone';
 import type { ViewWillEnter } from '@ionic/angular/standalone';
 import { Articulo, Caja, EstadoCaja } from '../../core/models';
-import { ArticuloService, AsignacionCajaService, CajaService, FotoService } from '../../core/services';
+import { ArticuloService, AsignacionCajaService, CajaService, FOTO_PORTADA_DEFAULT, FotoService } from '../../core/services';
 import { FotoComponent } from '../../shared/foto/foto.component';
 
 interface ArticuloEnCaja {
@@ -29,7 +30,18 @@ const ESTADOS: EstadoCaja[] = ['vacia', 'empacada', 'en_transito', 'entregada', 
   selector: 'app-detalle-caja',
   templateUrl: './detalle-caja.page.html',
   styleUrl: './detalle-caja.page.scss',
-  imports: [IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton, IonContent, IonFab, IonFabButton, IonIcon, FotoComponent],
+  imports: [
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonButtons,
+    IonBackButton,
+    IonContent,
+    IonFab,
+    IonFabButton,
+    IonIcon,
+    FotoComponent,
+  ],
 })
 export class DetalleCajaPage implements ViewWillEnter {
   private readonly route = inject(ActivatedRoute);
@@ -40,6 +52,7 @@ export class DetalleCajaPage implements ViewWillEnter {
   private readonly fotoService = inject(FotoService);
   private readonly alertController = inject(AlertController);
   private readonly actionSheetController = inject(ActionSheetController);
+  private readonly toastController = inject(ToastController);
 
   private readonly mudanzaId = this.route.snapshot.paramMap.get('mudanzaId')!;
   private readonly cajaId = this.route.snapshot.paramMap.get('cajaId')!;
@@ -75,6 +88,11 @@ export class DetalleCajaPage implements ViewWillEnter {
 
   formatEstado(estado: EstadoCaja): string {
     return estado.replace('_', ' ');
+  }
+
+  /** true = todavía no tiene foto propia, hay que mostrar el placeholder. */
+  esFotoPorDefecto(fotoPortadaUri: string): boolean {
+    return fotoPortadaUri === FOTO_PORTADA_DEFAULT;
   }
 
   async cambiarEstado(): Promise<void> {
@@ -128,12 +146,28 @@ export class DetalleCajaPage implements ViewWillEnter {
       const actualizada: Caja = { ...cajaActual, fotoPortadaUri };
       await this.cajaService.actualizar(actualizada);
       this.caja.set(actualizada);
-    } catch {
-      // el usuario canceló la captura — no es un error a mostrar
+    } catch (error) {
+      // "user cancelled photos app" / "No image picked" son cancelaciones,
+      // no errores reales — cualquier otra cosa sí vale la pena mostrarla en
+      // vez de fallar en silencio (así se vio "no funciona" la primera vez).
+      const mensaje = error instanceof Error ? error.message : String(error);
+      if (/cancel|no image/i.test(mensaje)) return;
+      const toast = await this.toastController.create({
+        message: 'No se pudo guardar la foto. Probá de nuevo.',
+        duration: 3000,
+        color: 'danger',
+      });
+      await toast.present();
     }
   }
 
   registrarArticulo(): void {
-    this.router.navigate(['/mudanzas', this.mudanzaId, 'cajas', this.cajaId, 'nuevo-articulo']);
+    this.router.navigate(['/mudanzas', this.mudanzaId, 'nuevo-articulo'], {
+      queryParams: { cajaId: this.cajaId },
+    });
+  }
+
+  verArticulo(articuloId: string): void {
+    this.router.navigate(['/mudanzas', this.mudanzaId, 'articulos', articuloId]);
   }
 }

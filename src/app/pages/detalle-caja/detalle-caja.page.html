@@ -16,7 +16,11 @@
   <ion-content class="ion-padding">
     <button class="cover" type="button" (click)="cambiarFoto()">
       <span class="tape-strip"></span>
-      <ion-icon name="camera-outline"></ion-icon>
+      @if (esFotoPorDefecto(cajaActual.fotoPortadaUri)) {
+        <ion-icon name="camera-outline"></ion-icon>
+      } @else {
+        <app-foto [uri]="cajaActual.fotoPortadaUri" [alt]="'Caja #' + cajaActual.numero" />
+      }
     </button>
 
     <div class="chips">
@@ -34,7 +38,7 @@
 
     <div class="lista">
       @for (item of articulos(); track item.articulo.id) {
-        <div class="fila">
+        <button class="fila" type="button" (click)="verArticulo(item.articulo.id)">
           <span class="thumb"><app-foto [uri]="item.articulo.fotoUri" [alt]="item.articulo.nombre" /></span>
           <span class="info">
             <span class="nombre">{{ item.articulo.nombre }}</span>
@@ -46,7 +50,7 @@
           @if (item.articulo.esencial) {
             <span class="flag">esencial</span>
           }
-        </div>
+        </button>
       }
     </div>
 
