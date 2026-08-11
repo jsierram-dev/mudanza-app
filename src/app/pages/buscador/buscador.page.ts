@@ -1,6 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { IonContent, IonHeader, IonSearchbar, IonToolbar } from '@ionic/angular/standalone';
-import type { SearchbarCustomEvent } from '@ionic/angular/standalone';
+import type { SearchbarCustomEvent, ViewWillEnter } from '@ionic/angular/standalone';
 import { Articulo } from '../../core/models';
 import { ArticuloService, AsignacionCajaService, CajaService } from '../../core/services';
 import { FotoComponent } from '../../shared/foto/foto.component';
@@ -22,15 +24,35 @@ interface ResultadoBusqueda {
   styleUrl: './buscador.page.scss',
   imports: [IonHeader, IonToolbar, IonContent, IonSearchbar, FotoComponent],
 })
-export class BuscadorPage {
+export class BuscadorPage implements ViewWillEnter {
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly articuloService = inject(ArticuloService);
   private readonly asignacionCajaService = inject(AsignacionCajaService);
   private readonly cajaService = inject(CajaService);
+
+  private readonly mudanzaId = this.route.snapshot.paramMap.get('mudanzaId')!;
 
   readonly texto = signal('');
   readonly soloFragiles = signal(false);
   readonly soloEsenciales = signal(false);
   readonly resultados = signal<ResultadoBusqueda[]>([]);
+
+  constructor() {
+    // Ver el comentario largo en CajasPage: esta página vive en <ion-tabs> y
+    // ionViewWillEnter no dispara al volver desde fuera de las pestañas.
+    this.router.events
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe((e) => {
+        if (e.urlAfterRedirects.endsWith(`/${this.mudanzaId}/buscar`)) this.actualizarResultados();
+      });
+  }
+
+  // Por defecto muestra todos los artículos (aunque ya estén en una caja),
+  // no solo los que matchean una búsqueda — pedido explícito del usuario.
+  ionViewWillEnter(): void {
+    this.actualizarResultados();
+  }
 
   async buscar(evento: SearchbarCustomEvent): Promise<void> {
     const texto = evento.detail.value ?? '';
@@ -48,12 +70,12 @@ export class BuscadorPage {
     await this.actualizarResultados();
   }
 
-  private async actualizarResultados(): Promise<void> {
-    if (!this.texto().trim()) {
-      this.resultados.set([]);
-      return;
-    }
+  verArticulo(articuloId: string): void {
+    this.router.navigate(['/mudanzas', this.mudanzaId, 'articulos', articuloId]);
+  }
 
+  private async actualizarResultados(): Promise<void> {
+    // buscarPorNombre('') ya devuelve todos — sin guard de "texto vacío".
     let articulos = await this.articuloService.buscarPorNombre(this.texto());
     if (this.soloFragiles()) articulos = articulos.filter((a) => a.fragil);
     if (this.soloEsenciales()) articulos = articulos.filter((a) => a.esencial);
