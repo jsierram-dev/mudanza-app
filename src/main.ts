@@ -1,11 +1,29 @@
-import { PLATFORM_ID } from '@angular/core';
+import { registerLocaleData } from '@angular/common';
+import localeEs from '@angular/common/locales/es';
+import { LOCALE_ID, PLATFORM_ID } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
-import { RouteReuseStrategy, provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
+import { defineCustomElements } from '@ionic/pwa-elements/loader';
+import {
+  RouteReuseStrategy,
+  provideRouter,
+  withPreloading,
+  withRouterConfig,
+  PreloadAllModules,
+} from '@angular/router';
 import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalone';
 import { Storage, StorageConfigToken, provideStorage } from '@ionic/storage-angular';
 
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
+import { registerIcons } from './app/core/icons';
+
+registerIcons();
+registerLocaleData(localeEs);
+// Solo tiene efecto real corriendo en navegador/PWA — @capacitor/camera usa
+// APIs nativas directas en iOS/Android y no necesita esto, pero sin registrar
+// el elemento <pwa-camera-modal> aquí, Camera.getPhoto() se queda colgado en
+// web (ver ROADMAP-mudanza.md).
+defineCustomElements(window);
 
 // Registro manual equivalente a IonicStorageModule.forRoot(), adaptado a
 // bootstrap standalone (ver core/services/storage.service.ts para el wrapper
@@ -13,8 +31,16 @@ import { AppComponent } from './app/app.component';
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    { provide: LOCALE_ID, useValue: 'es' },
     provideIonicAngular(),
-    provideRouter(routes, withPreloading(PreloadAllModules)),
+    provideRouter(
+      routes,
+      withPreloading(PreloadAllModules),
+      // Cajas/Pendientes/Buscar son rutas hijas de la de pestañas
+      // (mudanzas/:mudanzaId) — sin esto, su propio paramMap no vería
+      // mudanzaId (Angular no lo hereda del padre por defecto).
+      withRouterConfig({ paramsInheritanceStrategy: 'always' }),
+    ),
     { provide: StorageConfigToken, useValue: null },
     { provide: Storage, useFactory: provideStorage, deps: [PLATFORM_ID, StorageConfigToken] },
   ],
