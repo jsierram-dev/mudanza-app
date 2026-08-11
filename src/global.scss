@@ -26,12 +26,122 @@
 @import "@ionic/angular/css/flex-utils.css";
 
 /**
- * Ionic Dark Mode
+ * Ionic Dark Mode — deshabilitado a propósito.
  * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
+ * "Cinta y Cartón" es una identidad visual fija elegida el 2026-08-11 (ver
+ * ROADMAP-mudanza.md), no un tema claro/oscuro adaptable. Dejar el auto-switch
+ * de Ionic activo pisaría la paleta de variables.scss cuando el sistema esté
+ * en modo oscuro.
  */
-
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+/* @import '@ionic/angular/css/palettes/dark.system.css'; */
+
+/**
+ * Tokens propios de "Cinta y Cartón"
+ * -----------------------------------------------------
+ * Superset de lo ya mapeado a --ion-* en theme/variables.scss — estos se usan
+ * directo en los componentes propios de la app (crate-badge, tape-strip, etc.)
+ * que no tienen equivalente nativo en Ionic.
+ */
+:root {
+  --mv-paper: #ede3d0;
+  --mv-panel: #f8f2e6;
+  --mv-panel-2: #efe2c8;
+  --mv-ink: #2b2117;
+  --mv-muted: #8a765a;
+  --mv-line: #cdb98f;
+  --mv-line-soft: #e2d3ac;
+  --mv-accent: #d5461e;
+  --mv-accent-ink: #fff7ee;
+  --mv-stamp: #4b6b53;
+
+  // Bahnschrift (usada en los mockups) es exclusiva de Windows — en el
+  // dispositivo real (Android/iOS vía Capacitor) no existe y cae en el
+  // fallback en silencio. Pila condensada cross-platform en su lugar: Roboto
+  // Condensed viene con AOSP (todo Android), Arial Narrow cubre iOS/desktop.
+  // Si más adelante se quiere el trazo exacto de Bahnschrift, la alternativa
+  // real es autohospedar un archivo de fuente (ver ROADMAP-mudanza.md).
+  --mv-font-display: "Roboto Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+}
+
+/**
+ * Piezas visuales compartidas del lenguaje "Cinta y Cartón"
+ * -----------------------------------------------------
+ * Sin equivalente en Ionic — se usan tal cual en las páginas via clase.
+ */
+.crate-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--mv-ink);
+  color: var(--mv-accent-ink);
+  font-family: var(--mv-font-display);
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+  padding: 0.2rem 0.5rem;
+  clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);
+}
+
+.tape-strip {
+  position: absolute;
+  top: -0.5rem;
+  left: 50%;
+  transform: translateX(-50%) rotate(-2deg);
+  width: 4.6rem;
+  height: 1.25rem;
+  background: rgba(232, 217, 168, 0.82);
+  border: 1px solid rgba(201, 184, 143, 0.9);
+  pointer-events: none;
+}
+
+.viewfinder-frame {
+  position: relative;
+  border: 1.5px dashed var(--mv-line);
+  border-radius: 12px;
+  background: var(--mv-panel-2);
+}
+.viewfinder-frame .corner {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: var(--mv-ink) solid;
+  opacity: 0.55;
+}
+.viewfinder-frame .corner.tl { top: 10px; left: 10px; border-width: 2px 0 0 2px; }
+.viewfinder-frame .corner.tr { top: 10px; right: 10px; border-width: 2px 2px 0 0; }
+.viewfinder-frame .corner.bl { bottom: 10px; left: 10px; border-width: 0 0 2px 2px; }
+.viewfinder-frame .corner.br { bottom: 10px; right: 10px; border-width: 0 2px 2px 0; }
+
+.field-label {
+  display: block;
+  font-family: var(--mv-font-display);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--mv-muted);
+  margin: 0 0 0.3rem;
+}
+
+.stat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--mv-font-display);
+  font-size: 0.72rem;
+  color: var(--mv-muted);
+}
+.stat-pill .led {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--mv-muted);
+}
+.stat-pill.is-on {
+  color: var(--mv-accent);
+  font-weight: 600;
+}
+.stat-pill.is-on .led {
+  background: var(--mv-accent);
+}

@@ -1,2 +1,51 @@
-// For information on how to create your own theme, please refer to:
-// https://ionicframework.com/docs/theming/
+// Cinta y Cartón — dirección visual elegida el 2026-08-11 (ver ROADMAP-mudanza.md,
+// sección "Dirección visual"). Paleta fija, sin variante oscura: es una identidad
+// deliberada, no un tema que deba responder a las preferencias del sistema —
+// ver global.scss, donde se deshabilita el auto-switch a dark de Ionic.
+:root {
+  // -- mapeo a las variables nativas de Ionic, para que ion-button/ion-toolbar/
+  // ion-tab-bar/ion-item etc. hereden la paleta sin estilizar cada uno a mano --
+  --ion-background-color: #ede3d0;
+  --ion-background-color-rgb: 237, 227, 208;
+  --ion-text-color: #2b2117;
+  --ion-text-color-rgb: 43, 33, 23;
+
+  --ion-color-primary: #d5461e;
+  --ion-color-primary-rgb: 213, 70, 30;
+  --ion-color-primary-contrast: #fff7ee;
+  --ion-color-primary-contrast-rgb: 255, 247, 238;
+  --ion-color-primary-shade: #bb3d1a;
+  --ion-color-primary-tint: #d95d3b;
+
+  --ion-color-secondary: #4b6b53;
+  --ion-color-secondary-rgb: 75, 107, 83;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #425e4a;
+  --ion-color-secondary-tint: #5d7a65;
+
+  --ion-color-medium: #8a765a;
+  --ion-color-medium-rgb: 138, 118, 90;
+  --ion-color-medium-contrast: #ffffff;
+  --ion-color-medium-contrast-rgb: 255, 255, 255;
+  --ion-color-medium-shade: #79684f;
+  --ion-color-medium-tint: #96846b;
+
+  --ion-toolbar-background: #f8f2e6;
+  --ion-toolbar-color: #2b2117;
+  --ion-toolbar-border-color: #cdb98f;
+
+  --ion-item-background: #f8f2e6;
+  --ion-border-color: #cdb98f;
+
+  --ion-tab-bar-background: #f8f2e6;
+  --ion-tab-bar-border-color: #cdb98f;
+  --ion-tab-bar-color: #8a765a;
+  --ion-tab-bar-color-selected: #d5461e;
+
+  --ion-card-background: #f8f2e6;
+
+  // Cuerpo de texto: pila cross-platform nativa (iOS/Android/desktop), no
+  // Bahnschrift — ver nota de tipografía en global.scss.
+  --ion-font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
