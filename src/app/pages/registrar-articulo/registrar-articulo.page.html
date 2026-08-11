@@ -7,8 +7,8 @@
     </ion-buttons>
     <ion-title>Nuevo artículo</ion-title>
     <ion-buttons slot="end">
-      @if (caja(); as cajaActual) {
-        <span class="crate-badge">{{ formatNumero(cajaActual.numero) }}</span>
+      @if (cajaSeleccionada(); as c) {
+        <span class="crate-badge">{{ formatNumero(c.numero) }}</span>
       }
     </ion-buttons>
   </ion-toolbar>
@@ -72,19 +72,25 @@
       <hr class="divider" />
 
       <span class="field-label">Asignar a caja</span>
-      @if (caja(); as cajaActual) {
-        <div class="asignar-fila" [class.disabled]="sinAsignar()">
-          <span>Caja #{{ cajaActual.numero }} · {{ cajaActual.habitacionDestino || 'sin habitación' }}</span>
+      <button class="asignar-fila" type="button" (click)="elegirCaja()">
+        @if (cajaSeleccionada(); as c) {
+          <span>Caja #{{ c.numero }} · {{ c.habitacionDestino || 'sin habitación' }}</span>
+        } @else {
+          <span class="muted">Sin asignar — tocá para elegir una caja</span>
+        }
+        <span>▾</span>
+      </button>
+
+      @if (cajaSeleccionada()) {
+        <div class="asignar-fila">
+          <span>Cantidad</span>
           <div class="stepper">
-            <button type="button" (click)="decrementarCantidad()" [disabled]="sinAsignar()">−</button>
+            <button type="button" (click)="decrementarCantidad()">−</button>
             <span>{{ cantidad() }}</span>
-            <button type="button" (click)="incrementarCantidad()" [disabled]="sinAsignar()">+</button>
+            <button type="button" (click)="incrementarCantidad()">+</button>
           </div>
         </div>
       }
-      <button class="chip ghost" type="button" (click)="toggleSinAsignar()">
-        {{ sinAsignar() ? '✓ ' : '' }}dejar sin asignar por ahora
-      </button>
 
       <button class="btn-primario" type="button" (click)="guardar()" [disabled]="!nombre().trim()">
         Guardar artículo

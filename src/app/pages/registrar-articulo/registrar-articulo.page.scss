@@ -114,15 +114,19 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
   border: 1px solid var(--mv-line);
   border-radius: 5px;
   padding: 0.5rem 0.7rem;
+  font: inherit;
   font-size: 0.85rem;
+  color: inherit;
+  text-align: left;
   background: var(--mv-panel);
+}
 
-  &.disabled {
-    opacity: 0.5;
-  }
+.muted {
+  color: var(--mv-muted);
 }
 
 .stepper {

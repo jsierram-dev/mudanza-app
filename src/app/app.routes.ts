@@ -32,8 +32,16 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/detalle-caja/detalle-caja.page').then((m) => m.DetalleCajaPage),
   },
   {
-    path: 'mudanzas/:mudanzaId/cajas/:cajaId/nuevo-articulo',
+    // Escopada a la mudanza, no a una caja — se puede entrar desde el FAB de
+    // Detalle de caja (con ?cajaId= precargado) o desde el de Pendientes
+    // (sin caja, el usuario la elige adentro o la deja sin asignar).
+    path: 'mudanzas/:mudanzaId/nuevo-articulo',
     loadComponent: () =>
       import('./pages/registrar-articulo/registrar-articulo.page').then((m) => m.RegistrarArticuloPage),
+  },
+  {
+    path: 'mudanzas/:mudanzaId/articulos/:articuloId',
+    loadComponent: () =>
+      import('./pages/articulo-detalle/articulo-detalle.page').then((m) => m.ArticuloDetallePage),
   },
 ];
