@@ -239,8 +239,19 @@ export class SyncService {
     return Object.values(conflicts).reduce((total, list) => total + list.length, 0);
   }
 
+  /**
+   * El id se calcula siempre desde el propio URI (puro, nunca falla) — subir
+   * el archivo es un paso aparte que puede fallar sin por eso perder el id a
+   * mandar. Importa sobre todo para una caja/artículo ya borrado: su archivo
+   * local ya no existe (PhotoService.deleteFile() corrió al borrarlo), así
+   * que ni se intenta subir, pero el id sigue viajando en el snapshot para
+   * que el servidor pueda borrar también su copia (ver mudanza-back).
+   */
   private async boxToDto(box: Box): Promise<BoxDto> {
-    const coverPhotoId = await attempt(() => this.photoService.uploadIfNeeded(box.coverPhotoUri));
+    const coverPhotoId = this.photoService.photoIdFromUri(box.coverPhotoUri);
+    if (coverPhotoId && !box.deletedAt) {
+      await attempt(() => this.photoService.uploadIfNeeded(box.coverPhotoUri));
+    }
     return {
       id: box.id,
       moveId: box.moveId,
@@ -271,8 +282,12 @@ export class SyncService {
     };
   }
 
+  /** Misma razón que boxToDto(): el id sale del URI, no de si la subida funcionó. */
   private async itemToDto(item: Item): Promise<ItemDto> {
-    const photoId = await attempt(() => this.photoService.uploadIfNeeded(item.photoUri));
+    const photoId = this.photoService.photoIdFromUri(item.photoUri);
+    if (photoId && !item.deletedAt) {
+      await attempt(() => this.photoService.uploadIfNeeded(item.photoUri));
+    }
     return {
       id: item.id,
       name: item.name,

@@ -87,7 +87,7 @@ export class PhotoService {
    * tampoco es un error real para quien está borrando la entidad.
    */
   async deleteFile(uri: string): Promise<void> {
-    if (!this.uriToPhotoId(uri)) return;
+    if (!this.photoIdFromUri(uri)) return;
     try {
       await Filesystem.deleteFile({ path: uri, directory: Directory.Data });
     } catch {
@@ -99,9 +99,13 @@ export class PhotoService {
    * El nombre de archivo local YA es `${photoId}.jpeg` (ver captureAndSave)
    * — el photoId de mudanza-back es literalmente ese mismo UUID, sin mapeo
    * aparte. Un asset bundleado (ej. la portada de caja por defecto) no tiene
-   * photoId: no es una foto real, nunca se sube.
+   * photoId: no es una foto real, nunca se sube. Pura extracción de string,
+   * sin tocar el filesystem — a propósito: SyncService la necesita también
+   * para una entidad ya borrada (deleteFile() ya se comió el archivo local
+   * antes de que llegue a sincronizar, ver ROADMAP-mudanza.md), donde
+   * uploadIfNeeded() ya no puede devolver el id porque el archivo no existe.
    */
-  private uriToPhotoId(uri: string): string | null {
+  photoIdFromUri(uri: string): string | null {
     return uri.match(RE_PHOTO_ID)?.[1] ?? null;
   }
 
@@ -113,7 +117,7 @@ export class PhotoService {
    * bundleado (nada que subir).
    */
   async uploadIfNeeded(uri: string): Promise<string | null> {
-    const photoId = this.uriToPhotoId(uri);
+    const photoId = this.photoIdFromUri(uri);
     if (!photoId) return null;
     if (await this.wasUploaded(photoId)) return photoId;
 
