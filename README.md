@@ -51,7 +51,7 @@ No backend needed to use the app locally. To also try sync, run [`../../jp-back/
 
 ### Deploying it (free)
 
-Full plan in [`../../ROADMAP-mudanza.md`](../../ROADMAP-mudanza.md#despliegue) — short version: installable PWA, hosted for free on GitHub Pages, added to the home screen / installed straight from the browser on desktop and mobile (Android and iPhone both) — no app store, no native build.
+Full plan in [`../../ROADMAP-mudanza.md`](../../ROADMAP-mudanza.md#despliegue) — short version: installable PWA, hosted for free on GitHub Pages, added to the home screen / installed straight from the browser on desktop and mobile (Android and iPhone both) — no app store, no native build. Still to do on this end; the backend leg is already live — `mudanza-back` is deployed for real on Render (see [its README](../../jp-back/mudanza-back#deploying-it)), and `environment.prod.ts` already points at it.
 
 ### Full planning doc
 
@@ -106,7 +106,7 @@ No hace falta backend para usar la app en local. Para probar también la sincron
 
 ### Cómo desplegarla (gratis)
 
-Plan completo en [`../../ROADMAP-mudanza.md`](../../ROADMAP-mudanza.md#despliegue) — resumen: PWA instalable, alojada gratis en GitHub Pages, se instala directo desde el navegador en PC y celular (Android e iPhone) — sin tienda de apps, sin compilar nativo.
+Plan completo en [`../../ROADMAP-mudanza.md`](../../ROADMAP-mudanza.md#despliegue) — resumen: PWA instalable, alojada gratis en GitHub Pages, se instala directo desde el navegador en PC y celular (Android e iPhone) — sin tienda de apps, sin compilar nativo. Todavía pendiente de este lado; la pata del backend ya está en producción — `mudanza-back` está desplegado de verdad en Render (ver [su README](../../jp-back/mudanza-back#cómo-desplegarlo)), y `environment.prod.ts` ya apunta ahí.
 
 ### Documento de planificación completo
 
