@@ -4,7 +4,7 @@
  * '' cuando no hay nada que mostrar (0 = ningún artículo con peso cargado
  * todavía, el total no es realmente "cero", es desconocido).
  */
-export function formatPeso(totalKg: number): string {
+export function formatWeight(totalKg: number): string {
   if (totalKg <= 0) return '';
   if (totalKg < 1) return `${Math.round(totalKg * 1000)} g`;
   return `${totalKg.toFixed(1)} kg`;

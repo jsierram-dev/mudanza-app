@@ -1,74 +1,74 @@
-import { ArticuloCategoria } from './articulo-categoria.model';
-import { AsignacionCaja } from './asignacion-caja.model';
-import { EstadoCaja } from './caja.model';
-import { Categoria } from './categoria.model';
-import { Mudanza } from './mudanza.model';
+import { BoxAssignment } from './box-assignment.model';
+import { BoxStatus } from './box.model';
+import { Category } from './category.model';
+import { ItemCategory } from './item-category.model';
+import { Move } from './move.model';
 
 /**
  * DTOs "de cable" para POST /sync — espejo de mudanza-back/src/modules/sync/types.ts.
  * Redeclarados acá (no importados) por el mismo motivo que AuthUser: mudanza-app
  * y mudanza-back son repos separados, sin un paquete de tipos compartido.
  *
- * Mudanza/Categoria/ArticuloCategoria/AsignacionCaja tienen la MISMA forma que
- * sus modelos locales — se usan directo, sin mapeo. Caja y Articulo sí
- * difieren: el modelo local guarda un fotoUri de archivo local, el servidor
- * un fotoId — ver SyncService para la traducción.
+ * Move/Category/ItemCategory/BoxAssignment tienen la MISMA forma que sus
+ * modelos locales — se usan directo, sin mapeo. Box e Item sí difieren: el
+ * modelo local guarda un *photoUri de archivo local, el servidor un *photoId
+ * — ver SyncService para la traducción.
  */
 
-export interface CajaDto {
+export interface BoxDto {
   id: string;
-  mudanzaId: string;
-  numero: number;
-  nombre: string | null;
-  habitacionDestino: string | null;
-  estado: EstadoCaja;
-  fotoPortadaId: string | null;
-  actualizadoEn: string;
-  eliminadoEn: string | null;
+  moveId: string;
+  number: number;
+  name: string | null;
+  destinationRoom: string | null;
+  status: BoxStatus;
+  coverPhotoId: string | null;
+  updatedAt: string;
+  deletedAt: string | null;
 }
 
-export interface ArticuloDto {
+export interface ItemDto {
   id: string;
-  nombre: string;
-  fotoId: string | null;
-  fechaRegistro: string;
-  pesoKg: number | null;
-  fragil: boolean;
-  esencial: boolean;
-  actualizadoEn: string;
-  eliminadoEn: string | null;
+  name: string;
+  photoId: string | null;
+  registeredAt: string;
+  weightKg: number | null;
+  fragile: boolean;
+  essential: boolean;
+  updatedAt: string;
+  deletedAt: string | null;
 }
 
 export interface SnapshotDto {
-  mudanzas: Mudanza[];
-  cajas: CajaDto[];
-  articulos: ArticuloDto[];
-  categorias: Categoria[];
-  articuloCategorias: ArticuloCategoria[];
-  asignaciones: AsignacionCaja[];
+  moves: Move[];
+  boxes: BoxDto[];
+  items: ItemDto[];
+  categories: Category[];
+  itemCategories: ItemCategory[];
+  boxAssignments: BoxAssignment[];
 }
 
 export interface SyncRequestBody {
-  ultimaSincronizacion: string | null;
+  lastSyncedAt: string | null;
   snapshot: SnapshotDto;
 }
 
-export interface ConflictoDto<T> {
+export interface ConflictDto<T> {
   local: T;
-  servidor: T;
+  server: T;
 }
 
-export interface ConflictosDto {
-  mudanzas: ConflictoDto<Mudanza>[];
-  cajas: ConflictoDto<CajaDto>[];
-  articulos: ConflictoDto<ArticuloDto>[];
-  categorias: ConflictoDto<Categoria>[];
-  articuloCategorias: ConflictoDto<ArticuloCategoria>[];
-  asignaciones: ConflictoDto<AsignacionCaja>[];
+export interface ConflictsDto {
+  moves: ConflictDto<Move>[];
+  boxes: ConflictDto<BoxDto>[];
+  items: ConflictDto<ItemDto>[];
+  categories: ConflictDto<Category>[];
+  itemCategories: ConflictDto<ItemCategory>[];
+  boxAssignments: ConflictDto<BoxAssignment>[];
 }
 
 export interface SyncResponseBody {
-  sincronizadoEn: string;
-  actualizaciones: SnapshotDto;
-  conflictos: ConflictosDto;
+  syncedAt: string;
+  updates: SnapshotDto;
+  conflicts: ConflictsDto;
 }
