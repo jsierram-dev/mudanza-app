@@ -1,9 +1,11 @@
+import { ConMarcaDeSync } from '../utils/sync-meta';
+
 /**
  * Deliberadamente SIN cajaId y SIN mudanzaId — ver ROADMAP-mudanza.md.
  * El artículo es un catálogo personal reusable entre mudanzas; su relación con
  * una caja (y por lo tanto con una mudanza) vive en AsignacionCaja, no acá.
  */
-export interface Articulo {
+export interface Articulo extends ConMarcaDeSync {
   id: string;
   nombre: string;
   fotoUri: string;

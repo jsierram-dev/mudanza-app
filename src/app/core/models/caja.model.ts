@@ -1,6 +1,8 @@
+import { ConMarcaDeSync } from '../utils/sync-meta';
+
 export type EstadoCaja = 'vacia' | 'empacada' | 'en_transito' | 'entregada' | 'desempacada';
 
-export interface Caja {
+export interface Caja extends ConMarcaDeSync {
   id: string;
   mudanzaId: string;
   numero: number; // autogenerado secuencial al crear, editable después por el usuario

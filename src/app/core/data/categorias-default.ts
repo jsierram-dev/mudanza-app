@@ -5,6 +5,11 @@ import { Categoria } from '../models';
  * (ver CategoriaService.getAll). id=slug: estable, legible, sin necesidad de
  * generar UUID para datos que ya conocemos de antemano. El usuario puede
  * agregar categorías propias después — esto no es una lista cerrada.
+ *
+ * actualizadoEn/eliminadoEn presentes solo para cumplir la interfaz Categoria
+ * (todo lo sincronizable los necesita) — en la práctica no importan: los
+ * defaults NUNCA viajan a mudanza-back (ver CategoriaService.getAllParaSync),
+ * cada dispositivo los siembra localmente por su cuenta.
  */
 export const CATEGORIAS_DEFAULT: Categoria[] = [
   { id: 'electronica', nombre: 'Electrónica' },
@@ -19,4 +24,4 @@ export const CATEGORIAS_DEFAULT: Categoria[] = [
   { id: 'muebles', nombre: 'Muebles' },
   { id: 'jardin', nombre: 'Jardín y exterior' },
   { id: 'otros', nombre: 'Otros' },
-];
+].map((c) => ({ ...c, actualizadoEn: '2026-01-01T00:00:00.000Z', eliminadoEn: null }));
