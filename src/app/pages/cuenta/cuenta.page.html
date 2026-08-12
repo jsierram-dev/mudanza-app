@@ -1,0 +1,59 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/mudanzas"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Cuenta</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @if (!auth.isAuthenticated()) {
+    <p class="section-label">Sincronizar entre dispositivos</p>
+    <p class="explicacion">
+      La app funciona 100% local sin cuenta — iniciar sesión es opcional, y solo hace falta si querés ver el mismo
+      inventario en más de un dispositivo (celular y PC, por ejemplo).
+    </p>
+
+    <div class="boton-google" #googleButton></div>
+
+    @if (errorLogin()) {
+      <p class="error">{{ errorLogin() }}</p>
+    }
+  } @else {
+    <p class="section-label">Cuenta</p>
+    <div class="fila-cuenta">
+      <span class="icono"><ion-icon name="person-circle-outline"></ion-icon></span>
+      <span class="info">
+        <span class="nombre">{{ auth.currentUser()?.username }}</span>
+      </span>
+    </div>
+
+    <p class="section-label">Sincronización</p>
+    <p class="meta">
+      @if (ultimaSincronizacion()) {
+        Última sincronización: {{ ultimaSincronizacion() | date: 'd MMM y, HH:mm' }}
+      } @else {
+        Todavía no sincronizaste desde este dispositivo.
+      }
+    </p>
+
+    @if (sync.conflictosPendientes() > 0) {
+      <p class="conflicto">
+        <ion-icon name="alert-circle-outline"></ion-icon>
+        {{ sync.conflictosPendientes() }} cambio(s) en conflicto sin resolver — se van a poder revisar en una
+        próxima actualización.
+      </p>
+    }
+
+    <ion-button expand="block" (click)="sincronizarAhora()" [disabled]="sync.sincronizando()">
+      <ion-icon slot="start" name="sync-outline"></ion-icon>
+      {{ sync.sincronizando() ? 'Sincronizando…' : 'Sincronizar ahora' }}
+    </ion-button>
+
+    <ion-button expand="block" fill="clear" color="medium" (click)="cerrarSesion()">
+      <ion-icon slot="start" name="log-out-outline"></ion-icon>
+      Cerrar sesión
+    </ion-button>
+  }
+</ion-content>

@@ -6,3 +6,5 @@ export * from './categoria.service';
 export * from './articulo-categoria.service';
 export * from './asignacion-caja.service';
 export * from './foto.service';
+export * from './auth.service';
+export * from './sync.service';

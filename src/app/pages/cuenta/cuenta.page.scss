@@ -1,0 +1,76 @@
+.section-label {
+  font-family: var(--mv-font-display);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--mv-muted);
+  margin: 1.2rem 0 0.6rem;
+}
+.section-label:first-child {
+  margin-top: 0;
+}
+
+.explicacion {
+  color: var(--mv-muted);
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin: 0 0 1.25rem;
+}
+
+.boton-google {
+  display: flex;
+  justify-content: center;
+  margin: 0.5rem 0;
+}
+
+.error {
+  color: var(--ion-color-danger, #c0392b);
+  font-size: 0.85rem;
+  margin-top: 0.75rem;
+}
+
+.fila-cuenta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.8rem;
+  background: var(--mv-panel);
+  border: 1px solid var(--mv-line);
+  border-radius: 8px;
+}
+
+.icono {
+  font-size: 2rem;
+  color: var(--mv-muted);
+  display: flex;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.nombre {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.meta {
+  color: var(--mv-muted);
+  font-size: 0.85rem;
+  margin: 0 0 1rem;
+}
+
+.conflicto {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--mv-accent);
+  font-size: 0.85rem;
+  background: var(--mv-panel-2);
+  border: 1px solid var(--mv-line);
+  border-radius: 8px;
+  padding: 0.6rem 0.7rem;
+  margin: 0 0 1.25rem;
+}

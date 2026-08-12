@@ -7,6 +7,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/mudanzas/mudanzas.page').then((m) => m.MudanzasPage),
   },
   {
+    path: 'cuenta',
+    loadComponent: () => import('./pages/cuenta/cuenta.page').then((m) => m.CuentaPage),
+  },
+  {
     // Cajas/Pendientes/Buscar comparten pestañas dentro de una mudanza — ver
     // el diagrama de flujo del artifact de wireframes: Cajas es el hub.
     path: 'mudanzas/:mudanzaId',

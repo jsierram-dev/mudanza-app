@@ -1,8 +1,10 @@
 import { DatePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import {
   AlertController,
+  IonButton,
+  IonButtons,
   IonContent,
   IonFab,
   IonFabButton,
@@ -19,7 +21,19 @@ import { MudanzaService } from '../../core/services';
   selector: 'app-mudanzas',
   templateUrl: './mudanzas.page.html',
   styleUrl: './mudanzas.page.scss',
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton, IonIcon, DatePipe],
+  imports: [
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonButtons,
+    IonButton,
+    IonContent,
+    IonFab,
+    IonFabButton,
+    IonIcon,
+    RouterLink,
+    DatePipe,
+  ],
 })
 export class MudanzasPage implements ViewWillEnter {
   private readonly mudanzaService = inject(MudanzaService);
