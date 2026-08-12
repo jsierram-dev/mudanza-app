@@ -1,0 +1,52 @@
+# Build + deploy a GitHub Pages (ver ROADMAP-mudanza.md, sección "Despliegue").
+# A diferencia de jsierram-dev.github.io (sitio raíz del usuario, portfolio),
+# este repo es un "project site" — vive en /mudanza-app/, no en la raíz — por
+# eso el --base-href. Sin efecto hasta habilitar "Settings → Pages → Source:
+# GitHub Actions" en el repo (paso manual, no lo hace este workflow).
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx ng build --configuration production --base-href /mudanza-app/
+      # GitHub Pages no sabe nada del router de Angular (routing por path, no
+      # hash) — sin esto, refrescar o entrar directo a una URL como
+      # /mudanza-app/moves/x/boxes da 404 en vez de dejar que el router la
+      # resuelva del lado del cliente. Truco estándar de SPA en Pages: servir
+      # el mismo shell como 404.html.
+      - run: cp www/index.html www/404.html
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: www
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

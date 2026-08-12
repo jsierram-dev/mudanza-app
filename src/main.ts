@@ -1,6 +1,6 @@
 import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
-import { LOCALE_ID, PLATFORM_ID } from '@angular/core';
+import { LOCALE_ID, PLATFORM_ID, isDevMode } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
@@ -18,6 +18,7 @@ import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 import { registerIcons } from './app/core/icons';
 import { authInterceptor } from './app/core/interceptors/auth.interceptor';
+import { provideServiceWorker } from '@angular/service-worker';
 
 registerIcons();
 registerLocaleData(localeEs);
@@ -46,5 +47,11 @@ bootstrapApplication(AppComponent, {
     { provide: StorageConfigToken, useValue: null },
     { provide: Storage, useFactory: provideStorage, deps: [PLATFORM_ID, StorageConfigToken] },
     provideHttpClient(withInterceptors([authInterceptor])),
+    // Solo tiene efecto en un build de producción (ng add @angular/pwa) —
+    // en dev el service worker queda deshabilitado a propósito.
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000',
+    }),
   ],
 });
