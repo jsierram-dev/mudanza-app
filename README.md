@@ -22,6 +22,7 @@ Create a **mudanza** (move), and inside it create **cajas** (boxes) — each wit
 - **Buscador** — search everything, filter by frágil/esencial, see every box an item is split across.
 - **Vista previa de artículo** — full detail of one item: photo, data, categories, where it is.
 - **Cuenta** — optional Google sign-in and multi-device sync (see below).
+- **Conflictos** — resolve a real conflict (same entity changed on two devices) one at a time, side by side, or bulk-resolve them all at once.
 
 ### Stack
 
@@ -31,7 +32,7 @@ Ionic + Angular 20 (standalone components, signals), Capacitor (Camera/Filesyste
 
 ### Multi-device sync (optional)
 
-Sign in from **Cuenta** and the app syncs automatically on open (and on demand, with a "Sincronizar ahora" button) against `mudanza-back`. Deletes are tombstones under the hood, so they sync too, not just creates/edits. Real conflicts (the same item changed on two devices since the last sync) are counted and surfaced, never silently overwritten in either direction — there's no resolution UI yet, so a conflicting entity just keeps re-appearing as a conflict on every sync until that screen exists. Full design in [`../../ROADMAP-mudanza.md`](../../ROADMAP-mudanza.md#sincronización-multi-dispositivo-fase-4--diseño-cerrado-sin-construir).
+Sign in from **Cuenta** and the app syncs automatically on open (and on demand, with a "Sincronizar ahora" button) against `mudanza-back`. Deletes are tombstones under the hood, so they sync too, not just creates/edits. Real conflicts (the same entity changed on two devices since the last sync) are never silently overwritten in either direction — the conflict-count banner on Cuenta links to **Conflictos**, where you pick a side per entity (or bulk-resolve them all at once). Resolving only writes the choice locally; the next sync (automatic or manual) is what actually pushes it. Full design in [`../../ROADMAP-mudanza.md`](../../ROADMAP-mudanza.md#sincronización-multi-dispositivo-fase-4--diseño-cerrado-sin-construir).
 
 ### Testing
 
@@ -76,6 +77,7 @@ Creás una **mudanza**, y dentro creás **cajas** — cada una con habitación d
 - **Buscador** — busca en todo, filtra por frágil/esencial, ve en qué cajas está repartido un artículo.
 - **Vista previa de artículo** — detalle completo de un artículo: foto, datos, categorías, dónde está.
 - **Cuenta** — login opcional con Google y sincronización entre dispositivos (ver abajo).
+- **Conflictos** — resuelve un conflicto real (misma entidad cambiada en dos dispositivos) uno por uno, lado a lado, o todos de una con el atajo en bloque.
 
 ### Stack
 
@@ -85,7 +87,7 @@ Ionic + Angular 20 (componentes standalone, signals), Capacitor (Camera/Filesyst
 
 ### Sincronización entre dispositivos (opcional)
 
-Iniciá sesión desde **Cuenta** y la app sincroniza sola al abrir (y a pedido, con el botón "Sincronizar ahora") contra `mudanza-back`. Los borrados son tombstones por debajo, así que también sincronizan, no solo las creaciones/ediciones. Los conflictos reales (el mismo artículo cambiado en dos dispositivos desde el último sync) se cuentan y se muestran, nunca se pisan en silencio de ningún lado — todavía no hay pantalla de resolución, así que una entidad en conflicto sigue apareciendo como conflicto en cada sync hasta que esa pantalla exista. Diseño completo en [`../../ROADMAP-mudanza.md`](../../ROADMAP-mudanza.md#sincronización-multi-dispositivo-fase-4--diseño-cerrado-sin-construir).
+Iniciá sesión desde **Cuenta** y la app sincroniza sola al abrir (y a pedido, con el botón "Sincronizar ahora") contra `mudanza-back`. Los borrados son tombstones por debajo, así que también sincronizan, no solo las creaciones/ediciones. Los conflictos reales (la misma entidad cambiada en dos dispositivos desde el último sync) nunca se pisan en silencio de ningún lado — el banner de conflictos en Cuenta lleva a **Conflictos**, donde elegís un lado por entidad (o resolvés todo de una). Resolver solo guarda la elección en local; el próximo sync (automático o manual) es el que efectivamente la sube. Diseño completo en [`../../ROADMAP-mudanza.md`](../../ROADMAP-mudanza.md#sincronización-multi-dispositivo-fase-4--diseño-cerrado-sin-construir).
 
 ### Pruebas
 
