@@ -15,6 +15,7 @@ import {
   searchOutline,
   syncOutline,
   timeOutline,
+  trashOutline,
 } from 'ionicons/icons';
 
 /**
@@ -40,5 +41,6 @@ export function registerIcons(): void {
     'search-outline': searchOutline,
     'sync-outline': syncOutline,
     'time-outline': timeOutline,
+    'trash-outline': trashOutline,
   });
 }

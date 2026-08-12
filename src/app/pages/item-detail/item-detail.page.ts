@@ -1,7 +1,17 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, Location } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IonBackButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import {
+  AlertController,
+  IonBackButton,
+  IonButton,
+  IonButtons,
+  IonContent,
+  IonHeader,
+  IonIcon,
+  IonTitle,
+  IonToolbar,
+} from '@ionic/angular/standalone';
 import type { ViewWillEnter } from '@ionic/angular/standalone';
 import { Item } from '../../core/models';
 import { BoxAssignmentService, BoxService, CategoryService, ItemCategoryService, ItemService } from '../../core/services';
@@ -18,16 +28,29 @@ interface ItemLocation {
   selector: 'app-item-detail',
   templateUrl: './item-detail.page.html',
   styleUrl: './item-detail.page.scss',
-  imports: [IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton, IonContent, PhotoComponent, DatePipe],
+  imports: [
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonButtons,
+    IonButton,
+    IonBackButton,
+    IonContent,
+    IonIcon,
+    PhotoComponent,
+    DatePipe,
+  ],
 })
 export class ItemDetailPage implements ViewWillEnter {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly location = inject(Location);
   private readonly itemService = inject(ItemService);
   private readonly itemCategoryService = inject(ItemCategoryService);
   private readonly boxAssignmentService = inject(BoxAssignmentService);
   private readonly categoryService = inject(CategoryService);
   private readonly boxService = inject(BoxService);
+  private readonly alertController = inject(AlertController);
 
   private moveId = '';
   private itemId = '';
@@ -68,5 +91,33 @@ export class ItemDetailPage implements ViewWillEnter {
 
   goToBox(boxId: string): void {
     this.router.navigate(['/moves', this.moveId, 'boxes', boxId]);
+  }
+
+  /**
+   * Tombstone vía ItemService.delete() (cascada de asignaciones/categorías +
+   * borrado del archivo de la foto incluidos ahí). Se llega a esta pantalla
+   * desde tres lugares distintos (caja, pendientes, buscador) — volver con
+   * location.back() en vez de una ruta fija evita hardcodear cuál de los tres.
+   */
+  async deleteItem(): Promise<void> {
+    const currentItem = this.item();
+    if (!currentItem) return;
+
+    const alert = await this.alertController.create({
+      header: 'Borrar artículo',
+      message: `¿Seguro que querés borrar "${currentItem.name}"? Esta acción no se puede deshacer.`,
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Borrar',
+          role: 'destructive',
+          handler: async () => {
+            await this.itemService.delete(currentItem.id);
+            this.location.back();
+          },
+        },
+      ],
+    });
+    await alert.present();
   }
 }

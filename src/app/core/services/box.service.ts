@@ -4,6 +4,7 @@ import { active, now } from '../utils/sync-meta';
 import { ItemService } from './item.service';
 import { BoxAssignmentService } from './box-assignment.service';
 import { CollectionStore } from './collection-store';
+import { PhotoService } from './photo.service';
 import { StorageService } from './storage.service';
 
 /**
@@ -22,6 +23,7 @@ export class BoxService {
     storageService: StorageService,
     private boxAssignmentService: BoxAssignmentService,
     private itemService: ItemService,
+    private photoService: PhotoService,
   ) {
     this.store = new CollectionStore<Box>(storageService, 'boxes');
   }
@@ -73,9 +75,11 @@ export class BoxService {
     const all = await this.store.getAll();
     const idx = all.findIndex((b) => b.id === boxId);
     if (idx === -1) return;
+    const coverPhotoUri = all[idx].coverPhotoUri;
     all[idx] = { ...all[idx], deletedAt: now(), updatedAt: now() };
     await this.store.saveAll(all);
     await this.boxAssignmentService.deleteByBox(boxId);
+    await this.photoService.deleteFile(coverPhotoUri);
   }
 
   /**

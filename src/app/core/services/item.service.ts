@@ -4,6 +4,7 @@ import { active, now } from '../utils/sync-meta';
 import { ItemCategoryService } from './item-category.service';
 import { BoxAssignmentService } from './box-assignment.service';
 import { CollectionStore } from './collection-store';
+import { PhotoService } from './photo.service';
 import { StorageService } from './storage.service';
 
 export interface NewItemData {
@@ -22,6 +23,7 @@ export class ItemService {
     storageService: StorageService,
     private boxAssignmentService: BoxAssignmentService,
     private itemCategoryService: ItemCategoryService,
+    private photoService: PhotoService,
   ) {
     this.store = new CollectionStore<Item>(storageService, 'items');
   }
@@ -58,6 +60,7 @@ export class ItemService {
     const all = await this.store.getAll();
     const idx = all.findIndex((i) => i.id === itemId);
     if (idx === -1) return;
+    const photoUri = all[idx].photoUri;
     all[idx] = { ...all[idx], deletedAt: now(), updatedAt: now() };
     await this.store.saveAll(all);
     // limpieza de huérfanos en las dos relaciones (ver ROADMAP-mudanza.md)
@@ -65,6 +68,7 @@ export class ItemService {
       this.boxAssignmentService.deleteByItem(itemId),
       this.itemCategoryService.deleteByItem(itemId),
     ]);
+    await this.photoService.deleteFile(photoUri);
   }
 
   async searchByName(text: string): Promise<Item[]> {

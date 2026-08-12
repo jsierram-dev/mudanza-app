@@ -16,11 +16,11 @@ Create a **mudanza** (move), and inside it create **cajas** (boxes) — each wit
 
 - **Mudanzas** — list/create your moves.
 - **Cajas** — grid per move, cover photo, room, status, running total weight.
-- **Detalle de caja** — a box's contents, change its status/room/photo inline.
+- **Detalle de caja** — a box's contents, change its status/room/photo inline, delete the box (its items just become unassigned, not deleted).
 - **Registrar artículo** — camera or gallery capture, then name/weight/frágil/esencial/categorías, assign to a box (with a quantity) or leave unassigned.
 - **Pendientes** — items registered but not yet assigned to a box.
 - **Buscador** — search everything, filter by frágil/esencial, see every box an item is split across.
-- **Vista previa de artículo** — full detail of one item: photo, data, categories, where it is.
+- **Vista previa de artículo** — full detail of one item: photo, data, categories, where it is, delete it.
 - **Cuenta** — optional Google sign-in and multi-device sync (see below).
 - **Conflictos** — resolve a real conflict (same entity changed on two devices) one at a time, side by side, or bulk-resolve them all at once.
 
@@ -71,11 +71,11 @@ Creás una **mudanza**, y dentro creás **cajas** — cada una con habitación d
 
 - **Mudanzas** — lista/creación de tus mudanzas.
 - **Cajas** — grid por mudanza, foto de portada, habitación, estado, peso total acumulado.
-- **Detalle de caja** — contenido de una caja, cambiar estado/habitación/foto ahí mismo.
+- **Detalle de caja** — contenido de una caja, cambiar estado/habitación/foto ahí mismo, borrar la caja (sus artículos quedan sin asignar, no se borran).
 - **Registrar artículo** — captura con cámara o galería, después nombre/peso/frágil/esencial/categorías, asignar a una caja (con cantidad) o dejar sin asignar.
 - **Pendientes** — artículos registrados que todavía no se asignaron a ninguna caja.
 - **Buscador** — busca en todo, filtra por frágil/esencial, ve en qué cajas está repartido un artículo.
-- **Vista previa de artículo** — detalle completo de un artículo: foto, datos, categorías, dónde está.
+- **Vista previa de artículo** — detalle completo de un artículo: foto, datos, categorías, dónde está, borrarlo.
 - **Cuenta** — login opcional con Google y sincronización entre dispositivos (ver abajo).
 - **Conflictos** — resuelve un conflicto real (misma entidad cambiada en dos dispositivos) uno por uno, lado a lado, o todos de una con el atajo en bloque.
 

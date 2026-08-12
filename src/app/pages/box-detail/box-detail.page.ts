@@ -4,6 +4,7 @@ import {
   ActionSheetController,
   AlertController,
   IonBackButton,
+  IonButton,
   IonButtons,
   IonContent,
   IonFab,
@@ -36,6 +37,7 @@ const STATUSES: BoxStatus[] = ['empty', 'packed', 'in_transit', 'delivered', 'un
     IonToolbar,
     IonTitle,
     IonButtons,
+    IonButton,
     IonBackButton,
     IonContent,
     IonFab,
@@ -165,6 +167,40 @@ export class BoxDetailPage implements ViewWillEnter {
       });
       await toast.present();
     }
+  }
+
+  /**
+   * Tombstone vía BoxService.delete() (cascada de asignaciones + borrado del
+   * archivo de la foto de portada incluidos ahí). Los artículos que estaban
+   * en la caja NO se borran — quedan sin asignar, por eso el mensaje avisa
+   * cuando corresponde.
+   */
+  async deleteBox(): Promise<void> {
+    const currentBox = this.box();
+    if (!currentBox) return;
+
+    const itemCount = this.items().length;
+    const message =
+      itemCount > 0
+        ? `La caja #${currentBox.number} tiene ${itemCount} artículo(s) — al borrarla quedan pendientes de asignar. Esta acción no se puede deshacer.`
+        : `¿Seguro que querés borrar la caja #${currentBox.number}? Esta acción no se puede deshacer.`;
+
+    const alert = await this.alertController.create({
+      header: 'Borrar caja',
+      message,
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Borrar',
+          role: 'destructive',
+          handler: async () => {
+            await this.boxService.delete(currentBox.id);
+            this.router.navigate(['/moves', this.moveId, 'boxes']);
+          },
+        },
+      ],
+    });
+    await alert.present();
   }
 
   registerItem(): void {

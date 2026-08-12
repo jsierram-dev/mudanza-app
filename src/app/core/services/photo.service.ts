@@ -77,10 +77,23 @@ export class PhotoService {
     return `data:image/jpeg;base64,${data}`;
   }
 
-  // TODO (fase 1, junto con la pantalla de borrado de artículo/caja): borrar
-  // el archivo físico correspondiente con Filesystem.deleteFile({ path: uri,
-  // directory: Directory.Data }) — ahora que photoUri es un path relativo, ya
-  // no hace falta resolver nada antes de poder borrar.
+  /**
+   * Borra el archivo físico de una foto ya capturada — pensado para llamarse
+   * al borrar el artículo/caja dueño de la foto (BoxService.delete() /
+   * ItemService.delete()), ya que Ionic Storage no tiene borrado en cascada.
+   * Un asset bundleado (ej. la portada de caja por defecto) no tiene
+   * photoId real: no hay archivo que borrar, se ignora en silencio. Si el
+   * archivo ya no existe (nunca se llegó a escribir, o ya se borró antes)
+   * tampoco es un error real para quien está borrando la entidad.
+   */
+  async deleteFile(uri: string): Promise<void> {
+    if (!this.uriToPhotoId(uri)) return;
+    try {
+      await Filesystem.deleteFile({ path: uri, directory: Directory.Data });
+    } catch {
+      // ya no existe — nada que hacer
+    }
+  }
 
   /**
    * El nombre de archivo local YA es `${photoId}.jpeg` (ver captureAndSave)

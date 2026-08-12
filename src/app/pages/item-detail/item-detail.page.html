@@ -5,6 +5,11 @@
         <ion-back-button defaultHref="/moves"></ion-back-button>
       </ion-buttons>
       <ion-title>{{ i.name }}</ion-title>
+      <ion-buttons slot="end">
+        <ion-button (click)="deleteItem()" aria-label="Borrar artículo">
+          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
     </ion-toolbar>
   </ion-header>
 
