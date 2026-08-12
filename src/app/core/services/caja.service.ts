@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Caja } from '../models';
+import { activos, ahora } from '../utils/sync-meta';
 import { ArticuloService } from './articulo.service';
 import { AsignacionCajaService } from './asignacion-caja.service';
 import { CollectionStore } from './collection-store';
@@ -27,12 +28,12 @@ export class CajaService {
 
   async getPorMudanza(mudanzaId: string): Promise<Caja[]> {
     const todas = await this.store.getAll();
-    return todas.filter((c) => c.mudanzaId === mudanzaId);
+    return activos(todas).filter((c) => c.mudanzaId === mudanzaId);
   }
 
   async getById(cajaId: string): Promise<Caja | undefined> {
     const todas = await this.store.getAll();
-    return todas.find((c) => c.id === cajaId);
+    return activos(todas).find((c) => c.id === cajaId);
   }
 
   async crear(
@@ -40,7 +41,7 @@ export class CajaService {
     datos: Partial<Pick<Caja, 'nombre' | 'habitacionDestino' | 'fotoPortadaUri'>> = {},
   ): Promise<Caja> {
     const todas = await this.store.getAll();
-    const deLaMudanza = todas.filter((c) => c.mudanzaId === mudanzaId);
+    const deLaMudanza = activos(todas).filter((c) => c.mudanzaId === mudanzaId);
     const siguienteNumero = deLaMudanza.length ? Math.max(...deLaMudanza.map((c) => c.numero)) + 1 : 1;
 
     const nueva: Caja = {
@@ -51,6 +52,8 @@ export class CajaService {
       fotoPortadaUri: datos.fotoPortadaUri ?? FOTO_PORTADA_DEFAULT,
       nombre: datos.nombre,
       habitacionDestino: datos.habitacionDestino,
+      actualizadoEn: ahora(),
+      eliminadoEn: null,
     };
     todas.push(nueva);
     await this.store.saveAll(todas);
@@ -61,13 +64,17 @@ export class CajaService {
     const todas = await this.store.getAll();
     const idx = todas.findIndex((c) => c.id === caja.id);
     if (idx === -1) return;
-    todas[idx] = caja;
+    todas[idx] = { ...caja, actualizadoEn: ahora() };
     await this.store.saveAll(todas);
   }
 
+  /** Tombstone, no borrado real (ver ROADMAP-mudanza.md) — la fila se mantiene para sincronizar el borrado. */
   async eliminar(cajaId: string): Promise<void> {
     const todas = await this.store.getAll();
-    await this.store.saveAll(todas.filter((c) => c.id !== cajaId));
+    const idx = todas.findIndex((c) => c.id === cajaId);
+    if (idx === -1) return;
+    todas[idx] = { ...todas[idx], eliminadoEn: ahora(), actualizadoEn: ahora() };
+    await this.store.saveAll(todas);
     await this.asignacionCajaService.eliminarPorCaja(cajaId);
   }
 
@@ -85,5 +92,15 @@ export class CajaService {
       }),
     );
     return pesos.reduce((total, peso) => total + peso, 0);
+  }
+
+  /** Todas las filas, tombstones incluidos — para armar el snapshot saliente de /sync. */
+  getAllParaSync(): Promise<Caja[]> {
+    return this.store.getAll();
+  }
+
+  /** Aplica lo que devolvió el servidor (actualizaciones o una resolución de conflicto). */
+  aplicarDesdeSync(filas: Caja[]): Promise<void> {
+    return this.store.upsertMany(filas, (c) => c.id);
   }
 }
