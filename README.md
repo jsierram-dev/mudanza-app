@@ -21,16 +21,21 @@ Create a **mudanza** (move), and inside it create **cajas** (boxes) — each wit
 - **Pendientes** — items registered but not yet assigned to a box.
 - **Buscador** — search everything, filter by frágil/esencial, see every box an item is split across.
 - **Vista previa de artículo** — full detail of one item: photo, data, categories, where it is.
+- **Cuenta** — optional Google sign-in and multi-device sync (see below).
 
 ### Stack
 
 ![Angular, TypeScript](https://skillicons.dev/icons?i=angular,ts)
 
-Ionic + Angular 20 (standalone components, signals), Capacitor (Camera/Filesystem — real native APIs if ever built native, verified working web fallbacks otherwise). **No backend, no database server, no third-party API** — every screen reads/writes local storage on the device (`@ionic/storage-angular`) and photos live in the device's own filesystem. This app works fully offline by design, not as an afterthought.
+Ionic + Angular 20 (standalone components, signals), Capacitor (Camera/Filesystem — real native APIs if ever built native, verified working web fallbacks otherwise). **No backend required to use the app** — every screen reads/writes local storage on the device (`@ionic/storage-angular`) and photos live in the device's own filesystem, fully offline by design. A backend ([`../../jp-back/mudanza-back`](../../jp-back/mudanza-back)) exists purely as an *optional* add-on: sign in with Google and the same inventory shows up on another device too. Skip the sign-in and nothing changes.
+
+### Multi-device sync (optional)
+
+Sign in from **Cuenta** and the app syncs automatically on open (and on demand, with a "Sincronizar ahora" button) against `mudanza-back`. Deletes are tombstones under the hood, so they sync too, not just creates/edits. Real conflicts (the same item changed on two devices since the last sync) are counted and surfaced, never silently overwritten in either direction — there's no resolution UI yet, so a conflicting entity just keeps re-appearing as a conflict on every sync until that screen exists. Full design in [`../../ROADMAP-mudanza.md`](../../ROADMAP-mudanza.md#sincronización-multi-dispositivo-fase-4--diseño-cerrado-sin-construir).
 
 ### Testing
 
-Every feature is verified end-to-end with [Playwright](https://playwright.dev/) against the real running dev server — real camera captures (Chromium's fake-device flag stands in for a physical camera when none is available), real IndexedDB storage, nothing mocked. Bugs this caught that code review alone wouldn't have: a missing `@ionic/pwa-elements` dependency that silently hung the camera in-browser, a screen that never rendered a photo it had actually saved correctly, and Ionic's own page-caching inside `<ion-tabs>` serving stale data after leaving and returning to a tab.
+Every feature is verified end-to-end with [Playwright](https://playwright.dev/) against the real running dev server (and, for sync, the real `mudanza-back` + Neon) — real camera captures (Chromium's fake-device flag stands in for a physical camera when none is available), real IndexedDB storage, nothing mocked. Google's actual sign-in flow isn't realistically automatable, so sync tests inject a real JWT (signed with `jp-back-auth`'s own key) into storage the same way `AuthService` would, then drive everything downstream for real. Bugs this caught that code review alone wouldn't have: a missing `@ionic/pwa-elements` dependency that silently hung the camera in-browser, a screen that never rendered a photo it had actually saved correctly, Ionic's own page-caching inside `<ion-tabs>` serving stale data after leaving and returning to a tab, and (testing sync) several Ionic components living behind shadow DOM in ways that need a specific selector strategy (`ion-button:has-text(...)`, not the native `<button>` inside it, which doesn't inherit slotted text).
 
 ### How to run it
 
@@ -41,7 +46,7 @@ npm start                          # ng serve, port 4200
 npx ng serve --host 0.0.0.0
 ```
 
-No backend to start — this is the whole app.
+No backend needed to use the app locally. To also try sync, run [`../../jp-back/mudanza-back`](../../jp-back/mudanza-back) alongside it.
 
 ### Deploying it (free)
 
@@ -70,16 +75,21 @@ Creás una **mudanza**, y dentro creás **cajas** — cada una con habitación d
 - **Pendientes** — artículos registrados que todavía no se asignaron a ninguna caja.
 - **Buscador** — busca en todo, filtra por frágil/esencial, ve en qué cajas está repartido un artículo.
 - **Vista previa de artículo** — detalle completo de un artículo: foto, datos, categorías, dónde está.
+- **Cuenta** — login opcional con Google y sincronización entre dispositivos (ver abajo).
 
 ### Stack
 
 ![Angular, TypeScript](https://skillicons.dev/icons?i=angular,ts)
 
-Ionic + Angular 20 (componentes standalone, signals), Capacitor (Camera/Filesystem — APIs nativas reales si algún día se compila nativo, con sus alternativas web ya verificadas funcionando mientras tanto). **Sin backend, sin base de datos, sin API de terceros** — cada pantalla lee/escribe almacenamiento local del dispositivo (`@ionic/storage-angular`) y las fotos viven en el sistema de archivos del propio dispositivo. Esta app funciona 100% offline por diseño, no como un agregado tardío.
+Ionic + Angular 20 (componentes standalone, signals), Capacitor (Camera/Filesystem — APIs nativas reales si algún día se compila nativo, con sus alternativas web ya verificadas funcionando mientras tanto). **Sin backend obligatorio para usar la app** — cada pantalla lee/escribe almacenamiento local del dispositivo (`@ionic/storage-angular`) y las fotos viven en el sistema de archivos del propio dispositivo, 100% offline por diseño. Existe un backend ([`../../jp-back/mudanza-back`](../../jp-back/mudanza-back)) como agregado *opcional*: iniciás sesión con Google y el mismo inventario aparece en otro dispositivo. Sin loguearte, no cambia nada.
+
+### Sincronización entre dispositivos (opcional)
+
+Iniciá sesión desde **Cuenta** y la app sincroniza sola al abrir (y a pedido, con el botón "Sincronizar ahora") contra `mudanza-back`. Los borrados son tombstones por debajo, así que también sincronizan, no solo las creaciones/ediciones. Los conflictos reales (el mismo artículo cambiado en dos dispositivos desde el último sync) se cuentan y se muestran, nunca se pisan en silencio de ningún lado — todavía no hay pantalla de resolución, así que una entidad en conflicto sigue apareciendo como conflicto en cada sync hasta que esa pantalla exista. Diseño completo en [`../../ROADMAP-mudanza.md`](../../ROADMAP-mudanza.md#sincronización-multi-dispositivo-fase-4--diseño-cerrado-sin-construir).
 
 ### Pruebas
 
-Cada funcionalidad se verifica de extremo a extremo con [Playwright](https://playwright.dev/) contra el dev server real corriendo — capturas de cámara reales (la bandera de dispositivo falso de Chromium hace de cámara física cuando no hay una disponible), almacenamiento IndexedDB real, nada simulado. Bugs que esto encontró y que una revisión de código sola no hubiera visto: faltaba la dependencia `@ionic/pwa-elements` y la cámara se colgaba en silencio en el navegador, una pantalla que nunca mostraba una foto que sí había guardado bien, y el cacheo propio de páginas de Ionic dentro de `<ion-tabs>` sirviendo datos viejos al volver a una pestaña.
+Cada funcionalidad se verifica de extremo a extremo con [Playwright](https://playwright.dev/) contra el dev server real corriendo (y, para la sincronización, contra el `mudanza-back` y el Neon reales) — capturas de cámara reales (la bandera de dispositivo falso de Chromium hace de cámara física cuando no hay una disponible), almacenamiento IndexedDB real, nada simulado. El login real de Google no es automatizable de forma confiable, así que las pruebas de sync inyectan un JWT real (firmado con la clave propia de `jp-back-auth`) en el storage, tal como lo guardaría `AuthService`, y de ahí en más prueban todo de verdad. Bugs que esto encontró y que una revisión de código sola no hubiera visto: faltaba la dependencia `@ionic/pwa-elements` y la cámara se colgaba en silencio en el navegador, una pantalla que nunca mostraba una foto que sí había guardado bien, el cacheo propio de páginas de Ionic dentro de `<ion-tabs>` sirviendo datos viejos al volver a una pestaña, y (probando la sincronización) varios componentes de Ionic viviendo detrás de shadow DOM de formas que piden una estrategia de selector específica (`ion-button:has-text(...)`, no el `<button>` nativo de adentro, que no hereda el texto proyectado por slot).
 
 ### Cómo arrancarlo
 
@@ -90,7 +100,7 @@ npm start                          # ng serve, puerto 4200
 npx ng serve --host 0.0.0.0
 ```
 
-No hay backend que levantar — esto es la app completa.
+No hace falta backend para usar la app en local. Para probar también la sincronización, corré [`../../jp-back/mudanza-back`](../../jp-back/mudanza-back) al lado.
 
 ### Cómo desplegarla (gratis)
 
