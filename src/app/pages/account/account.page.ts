@@ -1,5 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, ViewChild, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import {
   IonBackButton,
   IonButton,
@@ -15,7 +16,7 @@ import type { ViewWillEnter } from '@ionic/angular/standalone';
 import { environment } from '../../../environments/environment';
 import { AuthService, SyncService } from '../../core/services';
 
-function cargarScriptGoogleIdentity(): Promise<void> {
+function loadGoogleIdentityScript(): Promise<void> {
   if (document.getElementById('google-identity-script')) return Promise.resolve();
   return new Promise((resolve, reject) => {
     const script = document.createElement('script');
@@ -35,29 +36,29 @@ function cargarScriptGoogleIdentity(): Promise<void> {
  * única que necesita conexión.
  */
 @Component({
-  selector: 'app-cuenta',
-  templateUrl: './cuenta.page.html',
-  styleUrl: './cuenta.page.scss',
-  imports: [IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton, IonContent, IonButton, IonIcon, DatePipe],
+  selector: 'app-account',
+  templateUrl: './account.page.html',
+  styleUrl: './account.page.scss',
+  imports: [IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton, IonContent, IonButton, IonIcon, RouterLink, DatePipe],
 })
-export class CuentaPage implements AfterViewInit, ViewWillEnter {
+export class AccountPage implements AfterViewInit, ViewWillEnter {
   @ViewChild('googleButton') private googleButtonRef?: ElementRef<HTMLDivElement>;
 
   protected readonly auth = inject(AuthService);
   protected readonly sync = inject(SyncService);
   private readonly toastController = inject(ToastController);
 
-  readonly errorLogin = signal<string | null>(null);
-  readonly ultimaSincronizacion = signal<string | null>(null);
+  readonly loginError = signal<string | null>(null);
+  readonly lastSyncedAt = signal<string | null>(null);
 
   ionViewWillEnter(): void {
-    this.cargarUltimaSincronizacion();
+    this.loadLastSyncedAt();
   }
 
   async ngAfterViewInit(): Promise<void> {
     if (this.auth.isAuthenticated() || !this.googleButtonRef) return;
     try {
-      await cargarScriptGoogleIdentity();
+      await loadGoogleIdentityScript();
       google.accounts.id.initialize({
         client_id: environment.googleClientId,
         callback: (response) => this.handleGoogleCredential(response.credential),
@@ -71,43 +72,43 @@ export class CuentaPage implements AfterViewInit, ViewWillEnter {
         width: 320,
       });
     } catch {
-      this.errorLogin.set('No se pudo cargar el inicio de sesión de Google.');
+      this.loginError.set('No se pudo cargar el inicio de sesión de Google.');
     }
   }
 
   private async handleGoogleCredential(idToken: string): Promise<void> {
-    this.errorLogin.set(null);
+    this.loginError.set(null);
     try {
       await this.auth.loginWithGoogle(idToken);
-      await this.sincronizarAhora();
+      await this.syncNow();
     } catch {
-      this.errorLogin.set('No se pudo iniciar sesión con Google.');
+      this.loginError.set('No se pudo iniciar sesión con Google.');
     }
   }
 
-  cerrarSesion(): void {
+  logOut(): void {
     this.auth.logout();
   }
 
-  async sincronizarAhora(): Promise<void> {
-    const resultado = await this.sync.sincronizar();
-    await this.cargarUltimaSincronizacion();
+  async syncNow(): Promise<void> {
+    const result = await this.sync.sync();
+    await this.loadLastSyncedAt();
 
-    if (resultado.ok) {
-      const mensaje =
-        resultado.conflictos > 0
-          ? `Sincronizado — ${resultado.conflictos} cambio(s) en conflicto sin resolver todavía`
+    if (result.ok) {
+      const message =
+        result.conflicts > 0
+          ? `Sincronizado — ${result.conflicts} cambio(s) en conflicto sin resolver todavía`
           : 'Sincronizado';
       const toast = await this.toastController.create({
-        message: mensaje,
+        message,
         duration: 2500,
-        color: resultado.conflictos > 0 ? 'warning' : 'success',
+        color: result.conflicts > 0 ? 'warning' : 'success',
       });
       await toast.present();
       return;
     }
 
-    if (resultado.motivo === 'error') {
+    if (result.reason === 'error') {
       const toast = await this.toastController.create({
         message: 'No se pudo sincronizar. Revisá tu conexión e intentá de nuevo.',
         duration: 3000,
@@ -117,7 +118,7 @@ export class CuentaPage implements AfterViewInit, ViewWillEnter {
     }
   }
 
-  private async cargarUltimaSincronizacion(): Promise<void> {
-    this.ultimaSincronizacion.set(await this.sync.ultimaSincronizacion());
+  private async loadLastSyncedAt(): Promise<void> {
+    this.lastSyncedAt.set(await this.sync.lastSyncedAt());
   }
 }

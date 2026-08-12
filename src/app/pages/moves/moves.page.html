@@ -2,7 +2,7 @@
   <ion-toolbar>
     <ion-title>Mudanza</ion-title>
     <ion-buttons slot="end">
-      <ion-button routerLink="/cuenta">
+      <ion-button routerLink="/account">
         <ion-icon slot="icon-only" name="person-circle-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -12,24 +12,24 @@
 <ion-content class="ion-padding">
   <p class="section-label">Tus mudanzas</p>
 
-  @if (mudanzas().length === 0) {
+  @if (moves().length === 0) {
     <p class="empty">Todavía no creaste ninguna mudanza.</p>
   }
 
   <div class="lista">
-    @for (mudanza of mudanzas(); track mudanza.id) {
-      <button class="fila" type="button" (click)="abrir(mudanza)">
+    @for (move of moves(); track move.id) {
+      <button class="fila" type="button" (click)="open(move)">
         <span class="icono"><ion-icon name="cube-outline"></ion-icon></span>
         <span class="info">
-          <span class="nombre">{{ mudanza.nombre }}</span>
-          <span class="meta">Creada {{ mudanza.fechaCreacion | date: 'd MMM y' }}</span>
+          <span class="nombre">{{ move.name }}</span>
+          <span class="meta">Creada {{ move.createdAt | date: 'd MMM y' }}</span>
         </span>
       </button>
     }
   </div>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button (click)="nuevaMudanza()">
+    <ion-fab-button (click)="newMove()">
       <ion-icon name="add-outline"></ion-icon>
     </ion-fab-button>
   </ion-fab>

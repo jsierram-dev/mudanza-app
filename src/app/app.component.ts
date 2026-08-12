@@ -20,7 +20,7 @@ export class AppComponent implements OnInit {
    */
   ngOnInit(): void {
     if (this.authService.isAuthenticated()) {
-      void this.syncService.sincronizar();
+      void this.syncService.sync();
     }
   }
 }

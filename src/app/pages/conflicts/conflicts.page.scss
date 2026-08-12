@@ -1,0 +1,208 @@
+.intro {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--mv-muted);
+  margin: 0 0 1rem;
+}
+
+.count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 22px;
+  padding: 0 7px;
+  margin-right: 0.75rem;
+  background: var(--mv-ink);
+  color: var(--mv-accent-ink);
+  font-family: var(--mv-font-display);
+  font-weight: 700;
+  font-size: 0.78rem;
+  clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);
+}
+.count-badge.is-done {
+  background: var(--mv-stamp);
+}
+
+.field-label {
+  display: block;
+  font-family: var(--mv-font-display);
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--mv-muted);
+  margin: 0;
+}
+
+.bulk-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--mv-panel);
+  border: 1px solid var(--mv-line-soft);
+  border-radius: 8px;
+  padding: 0.55rem 0.6rem;
+  margin: 0 0 1.1rem;
+  flex-wrap: wrap;
+}
+
+.bulk-chip {
+  font-family: var(--mv-font-display);
+  font-size: 0.72rem;
+  color: var(--mv-ink);
+  background: var(--mv-panel-2);
+  border: 1px solid var(--mv-line);
+  border-radius: 20px;
+  padding: 0.3rem 0.6rem;
+  white-space: nowrap;
+}
+
+.conflict-card {
+  background: var(--mv-panel);
+  border: 1px solid var(--mv-line);
+  border-radius: 10px;
+  margin: 0 0 1rem;
+  overflow: hidden;
+}
+
+.conflict-card-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 0.7rem;
+  border-bottom: 1px solid var(--mv-line-soft);
+}
+
+.entity-kind {
+  font-family: var(--mv-font-display);
+  font-size: 0.64rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--mv-muted);
+}
+
+.conflict-card-head .titulo {
+  font-weight: 700;
+  font-size: 0.92rem;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sides {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.side {
+  padding: 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.side + .side {
+  border-left: 1px dashed var(--mv-line);
+}
+
+.side-label {
+  font-family: var(--mv-font-display);
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--mv-muted);
+}
+
+.side-fact {
+  font-size: 0.8rem;
+  line-height: 1.35;
+  display: block;
+}
+
+.timestamp {
+  font-size: 0.68rem;
+  color: var(--mv-muted);
+  margin-top: auto;
+}
+
+.pick-btn {
+  margin-top: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  width: 100%;
+  font-family: var(--mv-font-display);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  color: var(--mv-accent-ink);
+  background: var(--mv-accent);
+  padding: 0.45rem;
+  clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+}
+
+.resolved-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--mv-panel);
+  border: 1px solid var(--mv-line-soft);
+  border-radius: 10px;
+  padding: 0.65rem 0.7rem;
+  margin: 0 0 0.75rem;
+}
+.resolved-row .ico-check {
+  flex-shrink: 0;
+  color: var(--mv-stamp);
+  font-size: 1.3rem;
+  display: flex;
+}
+.resolved-row .rr-body {
+  flex: 1;
+  min-width: 0;
+}
+.resolved-row .rr-title {
+  font-weight: 700;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.resolved-row .rr-meta {
+  font-size: 0.7rem;
+  color: var(--mv-muted);
+}
+.resolved-row .rr-meta b {
+  color: var(--mv-ink);
+}
+
+.undo-link {
+  font-family: var(--mv-font-display);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  color: var(--mv-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+}
+
+.empty-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  padding: 3rem 0.5rem 1rem;
+}
+.empty-wrap .empty {
+  color: var(--mv-muted);
+  font-size: 0.9rem;
+  margin: 0;
+}
+.empty-wrap ion-button {
+  width: 100%;
+}

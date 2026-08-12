@@ -14,13 +14,13 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import type { ViewWillEnter } from '@ionic/angular/standalone';
-import { Mudanza } from '../../core/models';
-import { MudanzaService } from '../../core/services';
+import { Move } from '../../core/models';
+import { MoveService } from '../../core/services';
 
 @Component({
-  selector: 'app-mudanzas',
-  templateUrl: './mudanzas.page.html',
-  styleUrl: './mudanzas.page.scss',
+  selector: 'app-moves',
+  templateUrl: './moves.page.html',
+  styleUrl: './moves.page.scss',
   imports: [
     IonHeader,
     IonToolbar,
@@ -35,41 +35,41 @@ import { MudanzaService } from '../../core/services';
     DatePipe,
   ],
 })
-export class MudanzasPage implements ViewWillEnter {
-  private readonly mudanzaService = inject(MudanzaService);
+export class MovesPage implements ViewWillEnter {
+  private readonly moveService = inject(MoveService);
   private readonly router = inject(Router);
   private readonly alertController = inject(AlertController);
 
-  readonly mudanzas = signal<Mudanza[]>([]);
+  readonly moves = signal<Move[]>([]);
 
   // Ionic reusa instancias de página ya visitadas — ver la nota en
-  // DetalleCajaPage. ionViewWillEnter corre siempre, constructor no.
+  // BoxDetailPage. ionViewWillEnter corre siempre, constructor no.
   ionViewWillEnter(): void {
-    this.cargar();
+    this.load();
   }
 
-  private async cargar(): Promise<void> {
-    this.mudanzas.set(await this.mudanzaService.getAll());
+  private async load(): Promise<void> {
+    this.moves.set(await this.moveService.getAll());
   }
 
-  abrir(mudanza: Mudanza): void {
-    this.router.navigate(['/mudanzas', mudanza.id, 'cajas']);
+  open(move: Move): void {
+    this.router.navigate(['/moves', move.id, 'boxes']);
   }
 
-  async nuevaMudanza(): Promise<void> {
+  async newMove(): Promise<void> {
     const alert = await this.alertController.create({
       header: 'Nueva mudanza',
-      inputs: [{ name: 'nombre', type: 'text', placeholder: 'Ej. Casa nueva — Alicante' }],
+      inputs: [{ name: 'name', type: 'text', placeholder: 'Ej. Casa nueva — Alicante' }],
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
         {
           text: 'Crear',
           handler: async (data) => {
-            const nombre = (data.nombre ?? '').trim();
-            if (!nombre) return false;
-            const creada = await this.mudanzaService.crear(nombre);
-            await this.cargar();
-            this.abrir(creada);
+            const name = (data.name ?? '').trim();
+            if (!name) return false;
+            const created = await this.moveService.create(name);
+            await this.load();
+            this.open(created);
             return true;
           },
         },

@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/mudanzas"></ion-back-button>
+      <ion-back-button defaultHref="/moves"></ion-back-button>
     </ion-buttons>
     <ion-title>Cuenta</ion-title>
   </ion-toolbar>
@@ -17,8 +17,8 @@
 
     <div class="boton-google" #googleButton></div>
 
-    @if (errorLogin()) {
-      <p class="error">{{ errorLogin() }}</p>
+    @if (loginError()) {
+      <p class="error">{{ loginError() }}</p>
     }
   } @else {
     <p class="section-label">Cuenta</p>
@@ -31,27 +31,27 @@
 
     <p class="section-label">Sincronización</p>
     <p class="meta">
-      @if (ultimaSincronizacion()) {
-        Última sincronización: {{ ultimaSincronizacion() | date: 'd MMM y, HH:mm' }}
+      @if (lastSyncedAt()) {
+        Última sincronización: {{ lastSyncedAt() | date: 'd MMM y, HH:mm' }}
       } @else {
         Todavía no sincronizaste desde este dispositivo.
       }
     </p>
 
-    @if (sync.conflictosPendientes() > 0) {
-      <p class="conflicto">
+    @if (sync.pendingConflicts() > 0) {
+      <button class="conflicto" type="button" routerLink="/conflicts">
         <ion-icon name="alert-circle-outline"></ion-icon>
-        {{ sync.conflictosPendientes() }} cambio(s) en conflicto sin resolver — se van a poder revisar en una
-        próxima actualización.
-      </p>
+        {{ sync.pendingConflicts() }} cambio(s) en conflicto sin resolver
+        <span class="chev">▸</span>
+      </button>
     }
 
-    <ion-button expand="block" (click)="sincronizarAhora()" [disabled]="sync.sincronizando()">
+    <ion-button expand="block" (click)="syncNow()" [disabled]="sync.syncing()">
       <ion-icon slot="start" name="sync-outline"></ion-icon>
-      {{ sync.sincronizando() ? 'Sincronizando…' : 'Sincronizar ahora' }}
+      {{ sync.syncing() ? 'Sincronizando…' : 'Sincronizar ahora' }}
     </ion-button>
 
-    <ion-button expand="block" fill="clear" color="medium" (click)="cerrarSesion()">
+    <ion-button expand="block" fill="clear" color="medium" (click)="logOut()">
       <ion-icon slot="start" name="log-out-outline"></ion-icon>
       Cerrar sesión
     </ion-button>

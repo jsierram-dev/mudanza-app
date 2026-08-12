@@ -38,9 +38,9 @@ bootstrapApplication(AppComponent, {
     provideRouter(
       routes,
       withPreloading(PreloadAllModules),
-      // Cajas/Pendientes/Buscar son rutas hijas de la de pestañas
-      // (mudanzas/:mudanzaId) — sin esto, su propio paramMap no vería
-      // mudanzaId (Angular no lo hereda del padre por defecto).
+      // Boxes/Pending/Search son rutas hijas de la de pestañas
+      // (moves/:moveId) — sin esto, su propio paramMap no vería
+      // moveId (Angular no lo hereda del padre por defecto).
       withRouterConfig({ paramsInheritanceStrategy: 'always' }),
     ),
     { provide: StorageConfigToken, useValue: null },

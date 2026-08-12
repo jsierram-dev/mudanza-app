@@ -1,0 +1,66 @@
+@if (box(); as currentBox) {
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-back-button [defaultHref]="'/moves/' + currentBox.moveId + '/boxes'"></ion-back-button>
+      </ion-buttons>
+      <ion-title>
+        Caja #{{ currentBox.number }}
+        @if (currentBox.destinationRoom) {
+          <span class="subtitulo">{{ currentBox.destinationRoom }}</span>
+        }
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content class="ion-padding">
+    <button class="cover" type="button" (click)="changePhoto()">
+      <span class="tape-strip"></span>
+      @if (isDefaultPhoto(currentBox.coverPhotoUri)) {
+        <ion-icon name="camera-outline"></ion-icon>
+      } @else {
+        <app-photo [uri]="currentBox.coverPhotoUri" [alt]="'Caja #' + currentBox.number" />
+      }
+    </button>
+
+    <div class="chips">
+      <button class="chip" type="button" (click)="changeStatus()">{{ formatStatus(currentBox.status) }} ▾</button>
+      <button class="chip" type="button" (click)="editDestinationRoom()">
+        {{ currentBox.destinationRoom || 'Sin habitación' }}
+      </button>
+      @if (totalWeightText(); as weight) {
+        <span class="chip peso-chip">{{ weight }}</span>
+      }
+    </div>
+
+    <p class="section-label">Artículos ({{ items().length }})</p>
+
+    @if (items().length === 0) {
+      <p class="empty">Todavía no hay artículos en esta caja.</p>
+    }
+
+    <div class="lista">
+      @for (entry of items(); track entry.item.id) {
+        <button class="fila" type="button" (click)="viewItem(entry.item.id)">
+          <span class="thumb"><app-photo [uri]="entry.item.photoUri" [alt]="entry.item.name" /></span>
+          <span class="info">
+            <span class="nombre">{{ entry.item.name }}</span>
+            <span class="meta">Cantidad: {{ entry.quantity }}</span>
+          </span>
+          @if (entry.item.fragile) {
+            <span class="flag">frágil</span>
+          }
+          @if (entry.item.essential) {
+            <span class="flag">esencial</span>
+          }
+        </button>
+      }
+    </div>
+
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button (click)="registerItem()">
+        <ion-icon name="add-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  </ion-content>
+}

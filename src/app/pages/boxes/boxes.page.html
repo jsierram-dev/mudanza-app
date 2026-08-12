@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/moves"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ moveTitle() }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @if (boxes().length === 0) {
+    <p class="empty">Todavía no hay cajas en esta mudanza.</p>
+  }
+
+  <div class="grid">
+    @for (item of boxes(); track item.box.id) {
+      <button class="card" type="button" (click)="open(item.box)">
+        <span class="crate-badge">{{ formatNumber(item.box.number) }}</span>
+        <span class="cover">
+          @if (isDefaultPhoto(item.box.coverPhotoUri)) {
+            <ion-icon name="image-outline"></ion-icon>
+          } @else {
+            <app-photo [uri]="item.box.coverPhotoUri" [alt]="'Caja #' + item.box.number" />
+          }
+        </span>
+        <span class="cname">{{ item.box.destinationRoom || item.box.name || 'Sin habitación' }}</span>
+        <span class="stat-pill" [class.is-on]="isActive(item.box.status)">
+          <span class="led"></span>{{ formatStatus(item.box.status) }}
+        </span>
+        @if (formatWeight(item.weightKg); as weight) {
+          <span class="peso">{{ weight }}</span>
+        }
+      </button>
+    }
+  </div>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="newBox()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

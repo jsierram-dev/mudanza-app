@@ -1,0 +1,57 @@
+@if (item(); as i) {
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-back-button defaultHref="/moves"></ion-back-button>
+      </ion-buttons>
+      <ion-title>{{ i.name }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content class="ion-padding">
+    <div class="foto-grande">
+      <app-photo [uri]="i.photoUri" [alt]="i.name" />
+    </div>
+
+    <h1 class="nombre">{{ i.name }}</h1>
+
+    <div class="flags">
+      @if (i.fragile) {
+        <span class="flag">frágil</span>
+      }
+      @if (i.essential) {
+        <span class="flag">esencial — abrir primero</span>
+      }
+      @if (i.weightKg) {
+        <span class="flag">{{ i.weightKg }} kg</span>
+      }
+    </div>
+
+    <p class="meta">Registrado el {{ i.registeredAt | date: 'd MMM y' }}</p>
+
+    @if (categoryNames().length > 0) {
+      <p class="section-label">Categorías</p>
+      <div class="chips-wrap">
+        @for (name of categoryNames(); track name) {
+          <span class="chip">{{ name }}</span>
+        }
+      </div>
+    }
+
+    <p class="section-label">Dónde está</p>
+    @if (locations().length === 0) {
+      <p class="empty">Todavía no está asignado a ninguna caja.</p>
+    }
+    <div class="lista">
+      @for (location of locations(); track location.boxId) {
+        <button class="fila" type="button" (click)="goToBox(location.boxId)">
+          <span class="nombre-caja">
+            Caja #{{ location.boxNumber }}
+            @if (location.room) { · {{ location.room }} }
+          </span>
+          <span class="cantidad">{{ location.quantity }} ud</span>
+        </button>
+      }
+    </div>
+  </ion-content>
+}

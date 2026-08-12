@@ -1,0 +1,75 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/account"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Conflictos</ion-title>
+    <span class="count-badge" [class.is-done]="pendingCount() === 0" slot="end">{{ pendingCount() }}</span>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @if (entries().length === 0) {
+    <div class="empty-wrap">
+      <p class="empty">No tenés conflictos pendientes.</p>
+      <ion-button expand="block" (click)="goToAccount()">Volver a Cuenta</ion-button>
+    </div>
+  } @else {
+    <p class="intro">
+      Estos cambios se hicieron en dos dispositivos distintos después del último sync. Elegí qué versión te queda,
+      una por una.
+    </p>
+
+    @if (pendingCount() > 1) {
+      <div class="bulk-row">
+        <span class="field-label">Elegir todo:</span>
+        <button class="bulk-chip" type="button" (click)="resolveAll('local')">Este dispositivo</button>
+        <button class="bulk-chip" type="button" (click)="resolveAll('server')">El otro dispositivo</button>
+      </div>
+    }
+
+    @for (entry of entries(); track entry) {
+      @if (entry.resolved) {
+        <div class="resolved-row">
+          <span class="ico-check">
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
+          </span>
+          <span class="rr-body">
+            <div class="rr-title">{{ entry.title }}</div>
+            <div class="rr-meta">→ <b>{{ entry.resolved === 'local' ? 'Este dispositivo' : 'El otro dispositivo' }}</b></div>
+          </span>
+          <button class="undo-link" type="button" (click)="undo(entry)">Deshacer</button>
+        </div>
+      } @else {
+        <div class="conflict-card">
+          <div class="conflict-card-head">
+            <span class="entity-kind">{{ entry.typeLabel }}</span>
+            <span class="titulo">{{ entry.title }}</span>
+          </div>
+          <div class="sides">
+            <div class="side">
+              <span class="side-label">Este dispositivo</span>
+              @for (fact of entry.localFacts; track fact) {
+                <span class="side-fact">{{ fact }}</span>
+              }
+              <span class="timestamp">Editado {{ relativeTime(entry.localTime) }}</span>
+              <button class="pick-btn" type="button" (click)="resolve(entry, 'local')">Usar esta ▸</button>
+            </div>
+            <div class="side">
+              <span class="side-label">El otro dispositivo</span>
+              @for (fact of entry.serverFacts; track fact) {
+                <span class="side-fact">{{ fact }}</span>
+              }
+              <span class="timestamp">Editado {{ relativeTime(entry.serverTime) }}</span>
+              <button class="pick-btn" type="button" (click)="resolve(entry, 'server')">Usar esta ▸</button>
+            </div>
+          </div>
+        </div>
+      }
+    }
+
+    @if (pendingCount() === 0) {
+      <ion-button expand="block" (click)="goToAccount()">Volver a Cuenta</ion-button>
+    }
+  }
+</ion-content>

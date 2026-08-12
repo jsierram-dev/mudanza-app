@@ -66,11 +66,20 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
+  width: 100%;
   color: var(--mv-accent);
+  font: inherit;
   font-size: 0.85rem;
   background: var(--mv-panel-2);
   border: 1px solid var(--mv-line);
   border-radius: 8px;
   padding: 0.6rem 0.7rem;
   margin: 0 0 1.25rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.conflicto .chev {
+  margin-left: auto;
+  flex-shrink: 0;
 }

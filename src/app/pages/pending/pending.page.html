@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Pendientes por empacar</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @if (pending().length === 0) {
+    <p class="empty">No hay artículos pendientes de asignar a una caja.</p>
+  }
+
+  <div class="lista">
+    @for (item of pending(); track item.id) {
+      <div class="fila" (click)="viewItem(item.id)">
+        <span class="thumb">
+          <app-photo [uri]="item.photoUri" [alt]="item.name" />
+        </span>
+        <span class="info">
+          <span class="nombre">{{ item.name }}</span>
+          <span class="meta">Registrado {{ item.registeredAt | date: 'd MMM' }}</span>
+        </span>
+        <button class="chip" type="button" (click)="assign(item); $event.stopPropagation()">Asignar</button>
+      </div>
+    }
+  </div>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="newItem()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

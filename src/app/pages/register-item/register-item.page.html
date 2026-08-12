@@ -1,21 +1,21 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button (click)="cancelar()">
+      <ion-button (click)="cancel()">
         <ion-icon name="close-outline" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
     <ion-title>Nuevo artículo</ion-title>
     <ion-buttons slot="end">
-      @if (cajaSeleccionada(); as c) {
-        <span class="crate-badge">{{ formatNumero(c.numero) }}</span>
+      @if (selectedBox(); as b) {
+        <span class="crate-badge">{{ formatNumber(b.number) }}</span>
       }
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  @if (paso() === 'camara') {
+  @if (step() === 'camera') {
     <div class="paso-camara">
       <div class="viewfinder-frame viewfinder">
         <span class="corner tl"></span><span class="corner tr"></span>
@@ -23,7 +23,7 @@
         <ion-icon name="image-outline"></ion-icon>
         <span>Encuadra el objeto</span>
       </div>
-      <button class="shutter" type="button" (click)="tomarFoto()" [disabled]="capturando()">
+      <button class="shutter" type="button" (click)="takePhoto()" [disabled]="capturing()">
         <ion-icon name="camera-outline"></ion-icon>
       </button>
       <p class="hint">Toma una foto del artículo</p>
@@ -33,38 +33,38 @@
       <div class="foto-actual">
         <div class="thumb-wrap">
           <span class="tape-strip sm"></span>
-          @if (fotoUri(); as uri) {
-            <app-foto [uri]="uri" alt="Foto del artículo" />
+          @if (photoUri(); as uri) {
+            <app-photo [uri]="uri" alt="Foto del artículo" />
           }
         </div>
-        <button class="chip" type="button" (click)="tomarFoto()">Cambiar foto</button>
+        <button class="chip" type="button" (click)="takePhoto()">Cambiar foto</button>
       </div>
 
       <label class="field-label" for="campo-nombre">Nombre</label>
-      <ion-input id="campo-nombre" fill="outline" placeholder="Ej. Sartén grande" [value]="nombre()" (ionInput)="actualizarNombre($event)"></ion-input>
+      <ion-input id="campo-nombre" fill="outline" placeholder="Ej. Sartén grande" [value]="name()" (ionInput)="updateName($event)"></ion-input>
 
       <label class="field-label" for="campo-peso">Peso (kg) · opcional</label>
-      <ion-input id="campo-peso" type="number" fill="outline" placeholder="0.0" [value]="pesoKg()" (ionInput)="actualizarPeso($event)"></ion-input>
+      <ion-input id="campo-peso" type="number" fill="outline" placeholder="0.0" [value]="weightKg()" (ionInput)="updateWeight($event)"></ion-input>
 
       <div class="toggle-row">
         <span>Frágil</span>
-        <ion-toggle [checked]="fragil()" (ionChange)="actualizarFragil($event)"></ion-toggle>
+        <ion-toggle [checked]="fragile()" (ionChange)="updateFragile($event)"></ion-toggle>
       </div>
       <div class="toggle-row">
         <span>Esencial</span>
-        <ion-toggle [checked]="esencial()" (ionChange)="actualizarEsencial($event)"></ion-toggle>
+        <ion-toggle [checked]="essential()" (ionChange)="updateEssential($event)"></ion-toggle>
       </div>
 
       <span class="field-label">Categorías</span>
       <div class="chips-wrap">
-        @for (categoria of categorias(); track categoria.id) {
+        @for (category of categories(); track category.id) {
           <button
             class="chip"
             type="button"
-            [class.selected]="categoriasSeleccionadas().has(categoria.id)"
-            (click)="toggleCategoria(categoria.id)"
+            [class.selected]="selectedCategories().has(category.id)"
+            (click)="toggleCategory(category.id)"
           >
-            {{ categoria.nombre }}
+            {{ category.name }}
           </button>
         }
       </div>
@@ -72,27 +72,27 @@
       <hr class="divider" />
 
       <span class="field-label">Asignar a caja</span>
-      <button class="asignar-fila" type="button" (click)="elegirCaja()">
-        @if (cajaSeleccionada(); as c) {
-          <span>Caja #{{ c.numero }} · {{ c.habitacionDestino || 'sin habitación' }}</span>
+      <button class="asignar-fila" type="button" (click)="chooseBox()">
+        @if (selectedBox(); as b) {
+          <span>Caja #{{ b.number }} · {{ b.destinationRoom || 'sin habitación' }}</span>
         } @else {
           <span class="muted">Sin asignar — tocá para elegir una caja</span>
         }
         <span>▾</span>
       </button>
 
-      @if (cajaSeleccionada()) {
+      @if (selectedBox()) {
         <div class="asignar-fila">
           <span>Cantidad</span>
           <div class="stepper">
-            <button type="button" (click)="decrementarCantidad()">−</button>
-            <span>{{ cantidad() }}</span>
-            <button type="button" (click)="incrementarCantidad()">+</button>
+            <button type="button" (click)="decrementQuantity()">−</button>
+            <span>{{ quantity() }}</span>
+            <button type="button" (click)="incrementQuantity()">+</button>
           </div>
         </div>
       }
 
-      <button class="btn-primario" type="button" (click)="guardar()" [disabled]="!nombre().trim()">
+      <button class="btn-primario" type="button" (click)="save()" [disabled]="!name().trim()">
         Guardar artículo
       </button>
     </div>

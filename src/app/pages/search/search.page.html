@@ -1,0 +1,43 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-searchbar
+      placeholder="Buscar artículo..."
+      [debounce]="250"
+      (ionInput)="search($event)"
+    ></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="chips">
+    <button class="chip" type="button" [class.selected]="onlyFragile()" (click)="toggleFragile()">Frágil</button>
+    <button class="chip" type="button" [class.selected]="onlyEssential()" (click)="toggleEssential()">Esencial</button>
+  </div>
+
+  @if (results().length === 0) {
+    <p class="empty">
+      {{ text().trim() ? 'Sin resultados para "' + text() + '".' : 'Todavía no registraste ningún artículo.' }}
+    </p>
+  }
+
+  <div class="lista">
+    @for (result of results(); track result.item.id) {
+      <div class="fila" (click)="viewItem(result.item.id)">
+        <span class="thumb"><app-photo [uri]="result.item.photoUri" [alt]="result.item.name" /></span>
+        <span class="info">
+          <span class="nombre">{{ result.item.name }}</span>
+          @if (result.locations.length === 0) {
+            <span class="meta sin-caja">Sin asignar todavía</span>
+          }
+          @for (location of result.locations; track location.boxNumber) {
+            <span class="meta">
+              En: Caja #{{ location.boxNumber }}
+              @if (location.room) { · {{ location.room }} }
+              — {{ location.quantity }} ud
+            </span>
+          }
+        </span>
+      </div>
+    }
+  </div>
+</ion-content>
