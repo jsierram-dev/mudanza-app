@@ -1,14 +1,18 @@
 import { addIcons } from 'ionicons';
 import {
   addOutline,
+  alertCircleOutline,
   arrowBackOutline,
   cameraOutline,
   chevronDownOutline,
   closeOutline,
   cubeOutline,
   imageOutline,
+  logOutOutline,
+  personCircleOutline,
   removeOutline,
   searchOutline,
+  syncOutline,
   timeOutline,
 } from 'ionicons/icons';
 
@@ -21,14 +25,18 @@ import {
 export function registerIcons(): void {
   addIcons({
     'add-outline': addOutline,
+    'alert-circle-outline': alertCircleOutline,
     'arrow-back-outline': arrowBackOutline,
     'camera-outline': cameraOutline,
     'chevron-down-outline': chevronDownOutline,
     'close-outline': closeOutline,
     'cube-outline': cubeOutline,
     'image-outline': imageOutline,
+    'log-out-outline': logOutOutline,
+    'person-circle-outline': personCircleOutline,
     'remove-outline': removeOutline,
     'search-outline': searchOutline,
+    'sync-outline': syncOutline,
     'time-outline': timeOutline,
   });
 }
