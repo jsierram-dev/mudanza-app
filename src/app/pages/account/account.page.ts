@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, ViewChild, inject, signal } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Injector, ViewChild, afterNextRender, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   IonBackButton,
@@ -60,6 +60,7 @@ export class AccountPage implements AfterViewInit, ViewWillEnter {
   protected readonly auth = inject(AuthService);
   protected readonly sync = inject(SyncService);
   private readonly toastController = inject(ToastController);
+  private readonly injector = inject(Injector);
 
   readonly loginError = signal<string | null>(null);
   readonly lastSyncedAt = signal<string | null>(null);
@@ -77,6 +78,20 @@ export class AccountPage implements AfterViewInit, ViewWillEnter {
   }
 
   async ngAfterViewInit(): Promise<void> {
+    await this.setupGoogleButton();
+  }
+
+  /**
+   * Bug real encontrado 2026-08-13: si se entra a Cuenta ya logueado,
+   * `ngAfterViewInit` (que corre una sola vez) nunca llega a dibujar el
+   * botón de Google porque en ese momento `isAuthenticated()` da true. Al
+   * cerrar sesión, el `@if` del template vuelve a mostrar el div del botón
+   * (Ionic/Angular lo recrea), pero nadie le pide a Google que lo dibuje
+   * ahí — por eso `logOut()` también llama a esto. `afterNextRender`
+   * asegura que ya exista el div nuevo en el DOM (y que `@ViewChild` ya lo
+   * haya agarrado) antes de intentar usarlo.
+   */
+  private async setupGoogleButton(): Promise<void> {
     if (this.auth.isAuthenticated() || !this.googleButtonRef) return;
     try {
       await loadGoogleIdentityScript();
@@ -112,6 +127,10 @@ export class AccountPage implements AfterViewInit, ViewWillEnter {
 
   logOut(): void {
     this.auth.logout();
+    // Angular recrea el div del botón (el @if del template vuelve a la rama
+    // "no logueado") y actualiza @ViewChild solo — afterNextRender espera a
+    // que ese render ya haya pasado antes de intentar usarlo.
+    afterNextRender(() => void this.setupGoogleButton(), { injector: this.injector });
   }
 
   async syncNow(): Promise<void> {
