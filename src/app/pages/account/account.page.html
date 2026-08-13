@@ -15,7 +15,14 @@
       inventario en más de un dispositivo (celular y PC, por ejemplo).
     </p>
 
-    <div class="boton-google" #googleButton></div>
+    <div class="boton-google" [hidden]="loggingIn()" #googleButton></div>
+
+    @if (loggingIn()) {
+      <div class="cargando-login">
+        <ion-spinner name="crescent"></ion-spinner>
+        <span>Iniciando sesión… puede tardar unos segundos</span>
+      </div>
+    }
 
     @if (loginError()) {
       <p class="error">{{ loginError() }}</p>

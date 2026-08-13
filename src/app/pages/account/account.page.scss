@@ -21,6 +21,24 @@
   display: flex;
   justify-content: center;
   margin: 0.5rem 0;
+
+  // Sin esto, este mismo "display: flex" le gana en la cascada al [hidden]
+  // nativo del navegador (misma especificidad, pero una regla de autor
+  // siempre le gana al stylesheet del user-agent).
+  &[hidden] {
+    display: none;
+  }
+}
+
+.cargando-login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin: 0.5rem 0;
+  color: var(--mv-muted);
+  font-size: 0.85rem;
+  text-align: center;
 }
 
 .error {

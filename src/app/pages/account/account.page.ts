@@ -8,6 +8,7 @@ import {
   IonContent,
   IonHeader,
   IonIcon,
+  IonSpinner,
   IonTitle,
   IonToolbar,
   ToastController,
@@ -39,7 +40,19 @@ function loadGoogleIdentityScript(): Promise<void> {
   selector: 'app-account',
   templateUrl: './account.page.html',
   styleUrl: './account.page.scss',
-  imports: [IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton, IonContent, IonButton, IonIcon, RouterLink, DatePipe],
+  imports: [
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonButtons,
+    IonBackButton,
+    IonContent,
+    IonButton,
+    IonIcon,
+    IonSpinner,
+    RouterLink,
+    DatePipe,
+  ],
 })
 export class AccountPage implements AfterViewInit, ViewWillEnter {
   @ViewChild('googleButton') private googleButtonRef?: ElementRef<HTMLDivElement>;
@@ -50,6 +63,14 @@ export class AccountPage implements AfterViewInit, ViewWillEnter {
 
   readonly loginError = signal<string | null>(null);
   readonly lastSyncedAt = signal<string | null>(null);
+  /**
+   * Entre elegir la cuenta de Google y que la pantalla cambie a "Cuenta" no
+   * había ningún indicio visual — con jp-back-auth/mudanza-back en el plan
+   * free de Render (se duermen sin uso), el primer login real puede tardar
+   * varios segundos reales en despertarlos, y sin esto parece que no pasó
+   * nada. Pedido explícito del usuario, 2026-08-13.
+   */
+  readonly loggingIn = signal(false);
 
   ionViewWillEnter(): void {
     this.loadLastSyncedAt();
@@ -78,11 +99,14 @@ export class AccountPage implements AfterViewInit, ViewWillEnter {
 
   private async handleGoogleCredential(idToken: string): Promise<void> {
     this.loginError.set(null);
+    this.loggingIn.set(true);
     try {
       await this.auth.loginWithGoogle(idToken);
       await this.syncNow();
     } catch {
       this.loginError.set('No se pudo iniciar sesión con Google.');
+    } finally {
+      this.loggingIn.set(false);
     }
   }
 
