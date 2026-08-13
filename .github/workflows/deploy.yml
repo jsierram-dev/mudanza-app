@@ -14,9 +14,6 @@ permissions:
   contents: read
   pages: write
   id-token: write
-  # jp-user-kit (@jsierram-dev/*) vive en GitHub Packages, privado — hace
-  # falta este permiso para que npm ci pueda bajarlo (ver el paso de abajo).
-  packages: read
 
 concurrency:
   group: pages
@@ -35,9 +32,11 @@ jobs:
           scope: '@jsierram-dev'
       - run: npm ci
         env:
-          # El GITHUB_TOKEN automático del workflow alcanza para LEER paquetes
-          # del mismo dueño (jsierram-dev) — no hace falta un secret aparte.
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # El GITHUB_TOKEN automático solo lee paquetes del MISMO repo — no
+          # alcanza a un paquete publicado desde otro repo (jp-libraries),
+          # aunque sea del mismo dueño. Hace falta un PAT real con
+          # read:packages, guardado como secret del repo (ver README).
+          NODE_AUTH_TOKEN: ${{ secrets.JP_PACKAGES_TOKEN }}
       - run: npx ng build --configuration production --base-href /mudanza-app/
       # GitHub Pages no sabe nada del router de Angular (routing por path, no
       # hash) — sin esto, refrescar o entrar directo a una URL como
