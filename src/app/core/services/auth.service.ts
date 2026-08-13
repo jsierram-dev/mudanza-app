@@ -40,8 +40,12 @@ export class AuthService {
   }
 
   async loginWithGoogle(idToken: string): Promise<AuthUser> {
+    // authBaseUrl (jp-back-auth), no apiBaseUrl (mudanza-back) — mudanza-back
+    // solo VERIFICA JWTs ya emitidos, nunca los emite. Bug real encontrado
+    // 2026-08-13: esto pegaba contra apiBaseUrl y 404eaba siempre — ver
+    // ROADMAP-mudanza.md.
     const response = await firstValueFrom(
-      this.http.post<LoginResponse>(`${environment.apiBaseUrl}/auth/google`, { idToken }),
+      this.http.post<LoginResponse>(`${environment.authBaseUrl}/auth/google`, { idToken }),
     );
     this.persistSession(response);
     return response.user;

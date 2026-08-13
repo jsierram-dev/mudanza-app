@@ -6,6 +6,11 @@ export const environment = {
   production: false,
   // mudanza-back corriendo en local — ver jp-back/mudanza-back/README.md
   apiBaseUrl: 'http://localhost:4003',
+  // jp-back-auth corriendo en local — es quien emite el JWT (mudanza-back
+  // solo lo verifica, nunca lo emite). Bug real encontrado 2026-08-13: el
+  // login pegaba contra apiBaseUrl/auth/google, que no existe en
+  // mudanza-back — ver ROADMAP-mudanza.md.
+  authBaseUrl: 'http://localhost:4001',
   // Mismo Google OAuth Client de similart-app (ver similart-app/src/app/core/config.ts) —
   // jp-back-auth valida el idToken contra un único GOOGLE_CLIENT_ID, así que
   // se reusa el mismo a propósito en vez de crear uno nuevo (decidido 2026-08-12,
