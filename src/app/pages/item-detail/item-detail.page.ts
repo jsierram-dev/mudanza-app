@@ -15,6 +15,7 @@ import {
 import type { ViewWillEnter } from '@ionic/angular/standalone';
 import { Item } from '../../core/models';
 import { BoxAssignmentService, BoxService, CategoryService, ItemCategoryService, ItemService } from '../../core/services';
+import { AccountButtonComponent } from '../../shared/account-button/account-button.component';
 import { PhotoComponent } from '../../shared/photo/photo.component';
 
 interface ItemLocation {
@@ -39,6 +40,7 @@ interface ItemLocation {
     IonIcon,
     PhotoComponent,
     DatePipe,
+    AccountButtonComponent,
   ],
 })
 export class ItemDetailPage implements ViewWillEnter {

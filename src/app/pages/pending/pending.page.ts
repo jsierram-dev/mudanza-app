@@ -4,6 +4,7 @@ import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import {
   ActionSheetController,
+  IonButtons,
   IonContent,
   IonFab,
   IonFabButton,
@@ -15,13 +16,26 @@ import {
 import type { ViewWillEnter } from '@ionic/angular/standalone';
 import { Item } from '../../core/models';
 import { BoxAssignmentService, BoxService, ItemService } from '../../core/services';
+import { AccountButtonComponent } from '../../shared/account-button/account-button.component';
 import { PhotoComponent } from '../../shared/photo/photo.component';
 
 @Component({
   selector: 'app-pending',
   templateUrl: './pending.page.html',
   styleUrl: './pending.page.scss',
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton, IonIcon, DatePipe, PhotoComponent],
+  imports: [
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonButtons,
+    IonContent,
+    IonFab,
+    IonFabButton,
+    IonIcon,
+    DatePipe,
+    PhotoComponent,
+    AccountButtonComponent,
+  ],
 })
 export class PendingPage implements ViewWillEnter {
   private readonly route = inject(ActivatedRoute);

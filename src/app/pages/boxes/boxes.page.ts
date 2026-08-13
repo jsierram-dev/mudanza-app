@@ -17,6 +17,7 @@ import type { ViewWillEnter } from '@ionic/angular/standalone';
 import { Box, BoxStatus } from '../../core/models';
 import { BoxService, DEFAULT_COVER_PHOTO, MoveService } from '../../core/services';
 import { formatWeight } from '../../core/utils/weight';
+import { AccountButtonComponent } from '../../shared/account-button/account-button.component';
 import { PhotoComponent } from '../../shared/photo/photo.component';
 
 interface BoxWithWeight {
@@ -39,6 +40,7 @@ interface BoxWithWeight {
     IonFabButton,
     IonIcon,
     PhotoComponent,
+    AccountButtonComponent,
   ],
 })
 export class BoxesPage implements ViewWillEnter {

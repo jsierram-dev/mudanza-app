@@ -14,6 +14,7 @@ import {
 } from '@ionic/angular/standalone';
 import type { InputCustomEvent, ToggleCustomEvent, ViewWillEnter } from '@ionic/angular/standalone';
 import { Box, Category } from '../../core/models';
+import { AccountButtonComponent } from '../../shared/account-button/account-button.component';
 import { PhotoComponent } from '../../shared/photo/photo.component';
 import {
   BoxAssignmentService,
@@ -41,6 +42,7 @@ type Step = 'camera' | 'form';
     IonInput,
     IonToggle,
     PhotoComponent,
+    AccountButtonComponent,
   ],
 })
 export class RegisterItemPage implements ViewWillEnter {

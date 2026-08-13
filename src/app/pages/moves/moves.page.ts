@@ -1,9 +1,8 @@
 import { DatePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import {
   AlertController,
-  IonButton,
   IonButtons,
   IonContent,
   IonFab,
@@ -16,6 +15,7 @@ import {
 import type { ViewWillEnter } from '@ionic/angular/standalone';
 import { Move } from '../../core/models';
 import { MoveService } from '../../core/services';
+import { AccountButtonComponent } from '../../shared/account-button/account-button.component';
 
 @Component({
   selector: 'app-moves',
@@ -26,12 +26,11 @@ import { MoveService } from '../../core/services';
     IonToolbar,
     IonTitle,
     IonButtons,
-    IonButton,
     IonContent,
     IonFab,
     IonFabButton,
     IonIcon,
-    RouterLink,
+    AccountButtonComponent,
     DatePipe,
   ],
 })

@@ -19,6 +19,7 @@ import type { ViewWillEnter } from '@ionic/angular/standalone';
 import { Box, BoxStatus, Item } from '../../core/models';
 import { BoxAssignmentService, BoxService, DEFAULT_COVER_PHOTO, ItemService, PhotoService } from '../../core/services';
 import { formatWeight } from '../../core/utils/weight';
+import { AccountButtonComponent } from '../../shared/account-button/account-button.component';
 import { PhotoComponent } from '../../shared/photo/photo.component';
 
 interface ItemInBox {
@@ -44,6 +45,7 @@ const STATUSES: BoxStatus[] = ['empty', 'packed', 'in_transit', 'delivered', 'un
     IonFabButton,
     IonIcon,
     PhotoComponent,
+    AccountButtonComponent,
   ],
 })
 export class BoxDetailPage implements ViewWillEnter {
