@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Move } from '../models';
 import { active, now } from '../utils/sync-meta';
+import { BoxService } from './box.service';
 import { CollectionStore } from './collection-store';
 import { StorageService } from './storage.service';
 
@@ -8,7 +9,10 @@ import { StorageService } from './storage.service';
 export class MoveService {
   private store: CollectionStore<Move>;
 
-  constructor(storageService: StorageService) {
+  constructor(
+    storageService: StorageService,
+    private boxService: BoxService,
+  ) {
     this.store = new CollectionStore<Move>(storageService, 'moves');
   }
 
@@ -33,6 +37,32 @@ export class MoveService {
     all.push(created);
     await this.store.saveAll(all);
     return created;
+  }
+
+  async update(move: Move): Promise<void> {
+    const all = await this.store.getAll();
+    const idx = all.findIndex((m) => m.id === move.id);
+    if (idx === -1) return;
+    all[idx] = { ...move, updatedAt: now() };
+    await this.store.saveAll(all);
+  }
+
+  /**
+   * Tombstone, no borrado real (ver ROADMAP-mudanza.md) — cascada a las cajas
+   * de la mudanza (que a su vez arrastran sus asignaciones y foto de
+   * portada, ver BoxService.delete). Los artículos NO se borran: son un
+   * catálogo reusable entre mudanzas (ver Item) y quedan sin asignar, igual
+   * que al borrar una caja sola.
+   */
+  async delete(moveId: string): Promise<void> {
+    const boxes = await this.boxService.getByMove(moveId);
+    await Promise.all(boxes.map((box) => this.boxService.delete(box.id)));
+
+    const all = await this.store.getAll();
+    const idx = all.findIndex((m) => m.id === moveId);
+    if (idx === -1) return;
+    all[idx] = { ...all[idx], deletedAt: now(), updatedAt: now() };
+    await this.store.saveAll(all);
   }
 
   /** Todas las filas, tombstones incluidos — para armar el snapshot saliente de /sync. */
