@@ -3,24 +3,27 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/moves"></ion-back-button>
     </ion-buttons>
-    <ion-title>Cuenta</ion-title>
+    <ion-title>{{ 'account.title' | translate }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
+  <p class="section-label">{{ 'account.language' | translate }}</p>
+  <div class="chips-wrap">
+    <button class="chip" type="button" [class.selected]="i18n.locale === 'en'" (click)="setLocale('en')">English</button>
+    <button class="chip" type="button" [class.selected]="i18n.locale === 'es'" (click)="setLocale('es')">Español</button>
+  </div>
+
   @if (!auth.isAuthenticated()) {
-    <p class="section-label">Sincronizar entre dispositivos</p>
-    <p class="explicacion">
-      La app funciona 100% local sin cuenta — iniciar sesión es opcional, y solo hace falta si querés ver el mismo
-      inventario en más de un dispositivo (celular y PC, por ejemplo).
-    </p>
+    <p class="section-label">{{ 'account.syncSectionLabel' | translate }}</p>
+    <p class="explicacion">{{ 'account.syncExplanation' | translate }}</p>
 
     <div class="boton-google" [hidden]="loggingIn()" #googleButton></div>
 
     @if (loggingIn()) {
       <div class="cargando-login">
         <ion-spinner name="crescent"></ion-spinner>
-        <span>Iniciando sesión… puede tardar unos segundos</span>
+        <span>{{ 'account.loggingIn' | translate }}</span>
       </div>
     }
 
@@ -28,7 +31,7 @@
       <p class="error">{{ loginError() }}</p>
     }
   } @else {
-    <p class="section-label">Cuenta</p>
+    <p class="section-label">{{ 'account.title' | translate }}</p>
     <div class="fila-cuenta">
       <span class="icono"><ion-icon name="person-circle-outline"></ion-icon></span>
       <span class="info">
@@ -36,31 +39,31 @@
       </span>
     </div>
 
-    <p class="section-label">Sincronización</p>
+    <p class="section-label">{{ 'account.syncStatusLabel' | translate }}</p>
     <p class="meta">
       @if (lastSyncedAt()) {
-        Última sincronización: {{ lastSyncedAt() | date: 'd MMM y, HH:mm' }}
+        {{ 'account.lastSyncedLabel' | translate }} {{ lastSyncedAt() | date: 'd MMM y, HH:mm' }}
       } @else {
-        Todavía no sincronizaste desde este dispositivo.
+        {{ 'account.neverSynced' | translate }}
       }
     </p>
 
     @if (sync.pendingConflicts() > 0) {
       <button class="conflicto" type="button" routerLink="/conflicts">
         <ion-icon name="alert-circle-outline"></ion-icon>
-        {{ sync.pendingConflicts() }} cambio(s) en conflicto sin resolver
+        {{ 'account.conflictsBanner' | translate: { n: sync.pendingConflicts() } }}
         <span class="chev">▸</span>
       </button>
     }
 
     <ion-button expand="block" (click)="syncNow()" [disabled]="sync.syncing()">
       <ion-icon slot="start" name="sync-outline"></ion-icon>
-      {{ sync.syncing() ? 'Sincronizando…' : 'Sincronizar ahora' }}
+      {{ (sync.syncing() ? 'account.syncing' : 'account.syncNow') | translate }}
     </ion-button>
 
     <ion-button expand="block" fill="clear" color="medium" (click)="logOut()">
       <ion-icon slot="start" name="log-out-outline"></ion-icon>
-      Cerrar sesión
+      {{ 'account.logOut' | translate }}
     </ion-button>
   }
 </ion-content>

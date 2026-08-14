@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Mudanza</ion-title>
+    <ion-title>{{ 'common.appName' | translate }}</ion-title>
     <ion-buttons slot="end">
       <app-account-button />
     </ion-buttons>
@@ -8,10 +8,10 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <p class="section-label">Tus mudanzas</p>
+  <p class="section-label">{{ 'moves.yourMoves' | translate }}</p>
 
   @if (moves().length === 0) {
-    <p class="empty">Todavía no creaste ninguna mudanza.</p>
+    <p class="empty">{{ 'moves.empty' | translate }}</p>
   }
 
   <div class="lista">
@@ -21,10 +21,10 @@
           <span class="icono"><ion-icon name="cube-outline"></ion-icon></span>
           <span class="info">
             <span class="nombre">{{ move.name }}</span>
-            <span class="meta">Creada {{ move.createdAt | date: 'd MMM y' }}</span>
+            <span class="meta">{{ 'moves.createdOn' | translate }} {{ move.createdAt | date: 'd MMM y' }}</span>
           </span>
         </button>
-        <ion-button class="opciones" fill="clear" (click)="openOptions(move)" aria-label="Opciones de la mudanza">
+        <ion-button class="opciones" fill="clear" (click)="openOptions(move)" [attr.aria-label]="'moves.optionsAria' | translate">
           <ion-icon slot="icon-only" name="ellipsis-vertical-outline"></ion-icon>
         </ion-button>
       </div>

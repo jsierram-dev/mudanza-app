@@ -6,7 +6,7 @@
       </ion-buttons>
       <ion-title>{{ i.name }}</ion-title>
       <ion-buttons slot="end">
-        <ion-button (click)="deleteItem()" aria-label="Borrar artículo">
+        <ion-button (click)="deleteItem()" [attr.aria-label]="'itemDetail.deleteHeader' | translate">
           <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
         </ion-button>
         <app-account-button />
@@ -23,20 +23,20 @@
 
     <div class="flags">
       @if (i.fragile) {
-        <span class="flag">frágil</span>
+        <span class="flag">{{ 'itemDetail.fragileFlag' | translate }}</span>
       }
       @if (i.essential) {
-        <span class="flag">esencial — abrir primero</span>
+        <span class="flag">{{ 'itemDetail.essentialFlag' | translate }}</span>
       }
       @if (i.weightKg) {
         <span class="flag">{{ i.weightKg }} kg</span>
       }
     </div>
 
-    <p class="meta">Registrado el {{ i.registeredAt | date: 'd MMM y' }}</p>
+    <p class="meta">{{ 'itemDetail.registeredOn' | translate }} {{ i.registeredAt | date: 'd MMM y' }}</p>
 
     @if (categoryNames().length > 0) {
-      <p class="section-label">Categorías</p>
+      <p class="section-label">{{ 'common.categoriesLabel' | translate }}</p>
       <div class="chips-wrap">
         @for (name of categoryNames(); track name) {
           <span class="chip">{{ name }}</span>
@@ -44,18 +44,18 @@
       </div>
     }
 
-    <p class="section-label">Dónde está</p>
+    <p class="section-label">{{ 'itemDetail.whereIsIt' | translate }}</p>
     @if (locations().length === 0) {
-      <p class="empty">Todavía no está asignado a ninguna caja.</p>
+      <p class="empty">{{ 'itemDetail.notAssigned' | translate }}</p>
     }
     <div class="lista">
       @for (location of locations(); track location.boxId) {
         <button class="fila" type="button" (click)="goToBox(location.boxId)">
           <span class="nombre-caja">
-            Caja #{{ location.boxNumber }}
+            {{ 'common.boxNumber' | translate: { number: location.boxNumber } }}
             @if (location.room) { · {{ location.room }} }
           </span>
-          <span class="cantidad">{{ location.quantity }} ud</span>
+          <span class="cantidad">{{ 'common.quantityUnits' | translate: { n: location.quantity } }}</span>
         </button>
       }
     </div>

@@ -16,8 +16,10 @@ import {
   ToastController,
 } from '@ionic/angular/standalone';
 import type { ViewWillEnter } from '@ionic/angular/standalone';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { Box, BoxStatus, Item } from '../../core/models';
-import { BoxAssignmentService, BoxService, DEFAULT_COVER_PHOTO, ItemService, PhotoService } from '../../core/services';
+import { BoxAssignmentService, BoxService, DEFAULT_COVER_PHOTO, ItemService, PhotoService, TranslationService } from '../../core/services';
+import { boxStatusKey } from '../../core/utils/box-status';
 import { formatWeight } from '../../core/utils/weight';
 import { AccountButtonComponent } from '../../shared/account-button/account-button.component';
 import { PhotoComponent } from '../../shared/photo/photo.component';
@@ -46,6 +48,7 @@ const STATUSES: BoxStatus[] = ['empty', 'packed', 'in_transit', 'delivered', 'un
     IonIcon,
     PhotoComponent,
     AccountButtonComponent,
+    TranslatePipe,
   ],
 })
 export class BoxDetailPage implements ViewWillEnter {
@@ -58,6 +61,7 @@ export class BoxDetailPage implements ViewWillEnter {
   private readonly alertController = inject(AlertController);
   private readonly actionSheetController = inject(ActionSheetController);
   private readonly toastController = inject(ToastController);
+  private readonly i18n = inject(TranslationService);
 
   private readonly moveId = this.route.snapshot.paramMap.get('moveId')!;
   private readonly boxId = this.route.snapshot.paramMap.get('boxId')!;
@@ -97,7 +101,7 @@ export class BoxDetailPage implements ViewWillEnter {
   }
 
   formatStatus(status: BoxStatus): string {
-    return status.replace('_', ' ');
+    return this.i18n.t(boxStatusKey(status));
   }
 
   /** true = todavía no tiene foto propia, hay que mostrar el placeholder. */
@@ -110,7 +114,7 @@ export class BoxDetailPage implements ViewWillEnter {
     if (!currentBox) return;
 
     const sheet = await this.actionSheetController.create({
-      header: 'Estado de la caja',
+      header: this.i18n.t('boxDetail.statusHeader'),
       buttons: [
         ...STATUSES.map((status) => ({
           text: this.formatStatus(status),
@@ -120,7 +124,7 @@ export class BoxDetailPage implements ViewWillEnter {
             this.box.set(updated);
           },
         })),
-        { text: 'Cancelar', role: 'cancel' },
+        { text: this.i18n.t('common.cancel'), role: 'cancel' },
       ],
     });
     await sheet.present();
@@ -131,12 +135,12 @@ export class BoxDetailPage implements ViewWillEnter {
     if (!currentBox) return;
 
     const alert = await this.alertController.create({
-      header: 'Habitación destino',
+      header: this.i18n.t('boxDetail.roomHeader'),
       inputs: [{ name: 'destinationRoom', type: 'text', value: currentBox.destinationRoom ?? '' }],
       buttons: [
-        { text: 'Cancelar', role: 'cancel' },
+        { text: this.i18n.t('common.cancel'), role: 'cancel' },
         {
-          text: 'Guardar',
+          text: this.i18n.t('common.save'),
           handler: async (data) => {
             const updated: Box = { ...currentBox, destinationRoom: (data.destinationRoom ?? '').trim() || undefined };
             await this.boxService.update(updated);
@@ -163,7 +167,7 @@ export class BoxDetailPage implements ViewWillEnter {
       const message = error instanceof Error ? error.message : String(error);
       if (/cancel|no image/i.test(message)) return;
       const toast = await this.toastController.create({
-        message: 'No se pudo guardar la foto. Probá de nuevo.',
+        message: this.i18n.t('boxDetail.photoError'),
         duration: 3000,
         color: 'danger',
       });
@@ -184,16 +188,16 @@ export class BoxDetailPage implements ViewWillEnter {
     const itemCount = this.items().length;
     const message =
       itemCount > 0
-        ? `La caja #${currentBox.number} tiene ${itemCount} artículo(s) — al borrarla quedan pendientes de asignar. Esta acción no se puede deshacer.`
-        : `¿Seguro que querés borrar la caja #${currentBox.number}? Esta acción no se puede deshacer.`;
+        ? this.i18n.t('boxDetail.deleteConfirmWithItems', { number: currentBox.number, count: itemCount })
+        : this.i18n.t('boxDetail.deleteConfirmEmpty', { number: currentBox.number });
 
     const alert = await this.alertController.create({
-      header: 'Borrar caja',
+      header: this.i18n.t('boxDetail.deleteAria'),
       message,
       buttons: [
-        { text: 'Cancelar', role: 'cancel' },
+        { text: this.i18n.t('common.cancel'), role: 'cancel' },
         {
-          text: 'Borrar',
+          text: this.i18n.t('common.delete'),
           role: 'destructive',
           handler: async () => {
             await this.boxService.delete(currentBox.id);

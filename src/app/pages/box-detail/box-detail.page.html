@@ -5,13 +5,13 @@
         <ion-back-button [defaultHref]="'/moves/' + currentBox.moveId + '/boxes'"></ion-back-button>
       </ion-buttons>
       <ion-title>
-        Caja #{{ currentBox.number }}
+        {{ 'common.boxNumber' | translate: { number: currentBox.number } }}
         @if (currentBox.destinationRoom) {
           <span class="subtitulo">{{ currentBox.destinationRoom }}</span>
         }
       </ion-title>
       <ion-buttons slot="end">
-        <ion-button (click)="deleteBox()" aria-label="Borrar caja">
+        <ion-button (click)="deleteBox()" [attr.aria-label]="'boxDetail.deleteAria' | translate">
           <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
         </ion-button>
         <app-account-button />
@@ -25,24 +25,24 @@
       @if (isDefaultPhoto(currentBox.coverPhotoUri)) {
         <ion-icon name="camera-outline"></ion-icon>
       } @else {
-        <app-photo [uri]="currentBox.coverPhotoUri" [alt]="'Caja #' + currentBox.number" />
+        <app-photo [uri]="currentBox.coverPhotoUri" [alt]="'common.boxNumber' | translate: { number: currentBox.number }" />
       }
     </button>
 
     <div class="chips">
       <button class="chip" type="button" (click)="changeStatus()">{{ formatStatus(currentBox.status) }} ▾</button>
       <button class="chip" type="button" (click)="editDestinationRoom()">
-        {{ currentBox.destinationRoom || 'Sin habitación' }}
+        {{ currentBox.destinationRoom || ('common.noRoom' | translate) }}
       </button>
       @if (totalWeightText(); as weight) {
         <span class="chip peso-chip">{{ weight }}</span>
       }
     </div>
 
-    <p class="section-label">Artículos ({{ items().length }})</p>
+    <p class="section-label">{{ 'boxDetail.itemsCount' | translate: { count: items().length } }}</p>
 
     @if (items().length === 0) {
-      <p class="empty">Todavía no hay artículos en esta caja.</p>
+      <p class="empty">{{ 'boxDetail.empty' | translate }}</p>
     }
 
     <div class="lista">
@@ -51,13 +51,13 @@
           <span class="thumb"><app-photo [uri]="entry.item.photoUri" [alt]="entry.item.name" /></span>
           <span class="info">
             <span class="nombre">{{ entry.item.name }}</span>
-            <span class="meta">Cantidad: {{ entry.quantity }}</span>
+            <span class="meta">{{ 'boxDetail.quantityLine' | translate: { n: entry.quantity } }}</span>
           </span>
           @if (entry.item.fragile) {
-            <span class="flag">frágil</span>
+            <span class="flag">{{ 'boxDetail.fragileFlag' | translate }}</span>
           }
           @if (entry.item.essential) {
-            <span class="flag">esencial</span>
+            <span class="flag">{{ 'boxDetail.essentialFlag' | translate }}</span>
           }
         </button>
       }

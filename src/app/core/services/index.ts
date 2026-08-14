@@ -1,4 +1,5 @@
 export * from './storage.service';
+export * from './translation.service';
 export * from './move.service';
 export * from './box.service';
 export * from './item.service';

@@ -13,9 +13,11 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import type { InputCustomEvent, ToggleCustomEvent, ViewWillEnter } from '@ionic/angular/standalone';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { Box, Category } from '../../core/models';
 import { AccountButtonComponent } from '../../shared/account-button/account-button.component';
 import { PhotoComponent } from '../../shared/photo/photo.component';
+import { categoryDisplayName } from '../../core/utils/category-label';
 import {
   BoxAssignmentService,
   BoxService,
@@ -23,6 +25,7 @@ import {
   ItemCategoryService,
   ItemService,
   PhotoService,
+  TranslationService,
 } from '../../core/services';
 
 type Step = 'camera' | 'form';
@@ -43,6 +46,7 @@ type Step = 'camera' | 'form';
     IonToggle,
     PhotoComponent,
     AccountButtonComponent,
+    TranslatePipe,
   ],
 })
 export class RegisterItemPage implements ViewWillEnter {
@@ -55,6 +59,7 @@ export class RegisterItemPage implements ViewWillEnter {
   private readonly itemCategoryService = inject(ItemCategoryService);
   private readonly boxAssignmentService = inject(BoxAssignmentService);
   private readonly actionSheetController = inject(ActionSheetController);
+  private readonly i18n = inject(TranslationService);
 
   private moveId = '';
   /** Caja con la que se entró (desde el FAB de Box Detail) — null si se entró desde Pending. */
@@ -139,17 +144,29 @@ export class RegisterItemPage implements ViewWillEnter {
 
   async chooseBox(): Promise<void> {
     const sheet = await this.actionSheetController.create({
-      header: 'Asignar a...',
+      header: this.i18n.t('registerItem.assignSheetHeader'),
       buttons: [
-        { text: 'Sin asignar', handler: () => this.selectedBox.set(undefined) },
+        { text: this.i18n.t('registerItem.unassignedOption'), handler: () => this.selectedBox.set(undefined) },
         ...this.availableBoxes().map((box) => ({
-          text: `Caja #${box.number}${box.destinationRoom ? ' · ' + box.destinationRoom : ''}`,
+          text: this.i18n.t('common.boxOption', {
+            number: box.number,
+            roomSuffix: box.destinationRoom ? ' · ' + box.destinationRoom : '',
+          }),
           handler: () => this.selectedBox.set(box),
         })),
-        { text: 'Cancelar', role: 'cancel' },
+        { text: this.i18n.t('common.cancel'), role: 'cancel' },
       ],
     });
     await sheet.present();
+  }
+
+  categoryLabel(category: Category): string {
+    return categoryDisplayName(category, (key) => this.i18n.t(key));
+  }
+
+  selectedBoxLabel(box: Box): string {
+    const roomSuffix = box.destinationRoom ? ' · ' + box.destinationRoom : ' · ' + this.i18n.t('registerItem.roomInline');
+    return this.i18n.t('common.boxOption', { number: box.number, roomSuffix });
   }
 
   toggleCategory(categoryId: string): void {

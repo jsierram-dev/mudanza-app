@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Pendientes por empacar</ion-title>
+    <ion-title>{{ 'pending.title' | translate }}</ion-title>
     <ion-buttons slot="end">
       <app-account-button />
     </ion-buttons>
@@ -9,7 +9,7 @@
 
 <ion-content class="ion-padding">
   @if (pending().length === 0) {
-    <p class="empty">No hay artículos pendientes de asignar a una caja.</p>
+    <p class="empty">{{ 'pending.empty' | translate }}</p>
   }
 
   <div class="lista">
@@ -20,9 +20,9 @@
         </span>
         <span class="info">
           <span class="nombre">{{ item.name }}</span>
-          <span class="meta">Registrado {{ item.registeredAt | date: 'd MMM' }}</span>
+          <span class="meta">{{ 'pending.registeredOn' | translate }} {{ item.registeredAt | date: 'd MMM' }}</span>
         </span>
-        <button class="chip" type="button" (click)="assign(item); $event.stopPropagation()">Asignar</button>
+        <button class="chip" type="button" (click)="assign(item); $event.stopPropagation()">{{ 'pending.assign' | translate }}</button>
       </div>
     }
   </div>

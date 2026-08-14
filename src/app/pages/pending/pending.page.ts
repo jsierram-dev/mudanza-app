@@ -14,8 +14,9 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import type { ViewWillEnter } from '@ionic/angular/standalone';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { Item } from '../../core/models';
-import { BoxAssignmentService, BoxService, ItemService } from '../../core/services';
+import { BoxAssignmentService, BoxService, ItemService, TranslationService } from '../../core/services';
 import { AccountButtonComponent } from '../../shared/account-button/account-button.component';
 import { PhotoComponent } from '../../shared/photo/photo.component';
 
@@ -35,6 +36,7 @@ import { PhotoComponent } from '../../shared/photo/photo.component';
     DatePipe,
     PhotoComponent,
     AccountButtonComponent,
+    TranslatePipe,
   ],
 })
 export class PendingPage implements ViewWillEnter {
@@ -44,6 +46,7 @@ export class PendingPage implements ViewWillEnter {
   private readonly boxService = inject(BoxService);
   private readonly boxAssignmentService = inject(BoxAssignmentService);
   private readonly actionSheetController = inject(ActionSheetController);
+  private readonly i18n = inject(TranslationService);
 
   private readonly moveId = this.route.snapshot.paramMap.get('moveId')!;
 
@@ -78,18 +81,21 @@ export class PendingPage implements ViewWillEnter {
     if (boxes.length === 0) return;
 
     const sheet = await this.actionSheetController.create({
-      header: `Asignar "${item.name}" a...`,
+      header: this.i18n.t('pending.assignHeader', { name: item.name }),
       buttons: [
         ...boxes
           .sort((a, b) => a.number - b.number)
           .map((box) => ({
-            text: `Caja #${box.number}${box.destinationRoom ? ' · ' + box.destinationRoom : ''}`,
+            text: this.i18n.t('common.boxOption', {
+              number: box.number,
+              roomSuffix: box.destinationRoom ? ' · ' + box.destinationRoom : '',
+            }),
             handler: async () => {
               await this.boxAssignmentService.assign(item.id, box.id, 1);
               await this.load();
             },
           })),
-        { text: 'Cancelar', role: 'cancel' },
+        { text: this.i18n.t('common.cancel'), role: 'cancel' },
       ],
     });
     await sheet.present();

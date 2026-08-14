@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-searchbar
-      placeholder="Buscar artículo..."
+      [placeholder]="'search.placeholder' | translate"
       [debounce]="250"
       (ionInput)="search($event)"
     ></ion-searchbar>
@@ -13,13 +13,13 @@
 
 <ion-content class="ion-padding">
   <div class="chips">
-    <button class="chip" type="button" [class.selected]="onlyFragile()" (click)="toggleFragile()">Frágil</button>
-    <button class="chip" type="button" [class.selected]="onlyEssential()" (click)="toggleEssential()">Esencial</button>
+    <button class="chip" type="button" [class.selected]="onlyFragile()" (click)="toggleFragile()">{{ 'common.fragile' | translate }}</button>
+    <button class="chip" type="button" [class.selected]="onlyEssential()" (click)="toggleEssential()">{{ 'common.essential' | translate }}</button>
   </div>
 
   @if (results().length === 0) {
     <p class="empty">
-      {{ text().trim() ? 'Sin resultados para "' + text() + '".' : 'Todavía no registraste ningún artículo.' }}
+      {{ text().trim() ? ('search.noResultsFor' | translate: { text: text() }) : ('search.emptyAll' | translate) }}
     </p>
   }
 
@@ -30,13 +30,13 @@
         <span class="info">
           <span class="nombre">{{ result.item.name }}</span>
           @if (result.locations.length === 0) {
-            <span class="meta sin-caja">Sin asignar todavía</span>
+            <span class="meta sin-caja">{{ 'search.unassigned' | translate }}</span>
           }
           @for (location of result.locations; track location.boxNumber) {
             <span class="meta">
-              En: Caja #{{ location.boxNumber }}
+              {{ 'search.locationPrefix' | translate }}{{ 'common.boxNumber' | translate: { number: location.boxNumber } }}
               @if (location.room) { · {{ location.room }} }
-              — {{ location.quantity }} ud
+              — {{ 'common.quantityUnits' | translate: { n: location.quantity } }}
             </span>
           }
         </span>

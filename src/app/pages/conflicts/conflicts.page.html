@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/account"></ion-back-button>
     </ion-buttons>
-    <ion-title>Conflictos</ion-title>
+    <ion-title>{{ 'conflicts.title' | translate }}</ion-title>
     <span class="count-badge" [class.is-done]="pendingCount() === 0" slot="end">{{ pendingCount() }}</span>
   </ion-toolbar>
 </ion-header>
@@ -11,20 +11,17 @@
 <ion-content class="ion-padding">
   @if (entries().length === 0) {
     <div class="empty-wrap">
-      <p class="empty">No tenés conflictos pendientes.</p>
-      <ion-button expand="block" (click)="goToAccount()">Volver a Cuenta</ion-button>
+      <p class="empty">{{ 'conflicts.empty' | translate }}</p>
+      <ion-button expand="block" (click)="goToAccount()">{{ 'conflicts.backToAccount' | translate }}</ion-button>
     </div>
   } @else {
-    <p class="intro">
-      Estos cambios se hicieron en dos dispositivos distintos después del último sync. Elegí qué versión te queda,
-      una por una.
-    </p>
+    <p class="intro">{{ 'conflicts.intro' | translate }}</p>
 
     @if (pendingCount() > 1) {
       <div class="bulk-row">
-        <span class="field-label">Elegir todo:</span>
-        <button class="bulk-chip" type="button" (click)="resolveAll('local')">Este dispositivo</button>
-        <button class="bulk-chip" type="button" (click)="resolveAll('server')">El otro dispositivo</button>
+        <span class="field-label">{{ 'conflicts.chooseAllLabel' | translate }}</span>
+        <button class="bulk-chip" type="button" (click)="resolveAll('local')">{{ 'conflicts.thisDevice' | translate }}</button>
+        <button class="bulk-chip" type="button" (click)="resolveAll('server')">{{ 'conflicts.otherDevice' | translate }}</button>
       </div>
     }
 
@@ -36,9 +33,12 @@
           </span>
           <span class="rr-body">
             <div class="rr-title">{{ entry.title }}</div>
-            <div class="rr-meta">→ <b>{{ entry.resolved === 'local' ? 'Este dispositivo' : 'El otro dispositivo' }}</b></div>
+            <div class="rr-meta">
+              →
+              <b>{{ (entry.resolved === 'local' ? 'conflicts.thisDevice' : 'conflicts.otherDevice') | translate }}</b>
+            </div>
           </span>
-          <button class="undo-link" type="button" (click)="undo(entry)">Deshacer</button>
+          <button class="undo-link" type="button" (click)="undo(entry)">{{ 'common.undo' | translate }}</button>
         </div>
       } @else {
         <div class="conflict-card">
@@ -48,20 +48,20 @@
           </div>
           <div class="sides">
             <div class="side">
-              <span class="side-label">Este dispositivo</span>
+              <span class="side-label">{{ 'conflicts.thisDevice' | translate }}</span>
               @for (fact of entry.localFacts; track fact) {
                 <span class="side-fact">{{ fact }}</span>
               }
-              <span class="timestamp">Editado {{ relativeTime(entry.localTime) }}</span>
-              <button class="pick-btn" type="button" (click)="resolve(entry, 'local')">Usar esta ▸</button>
+              <span class="timestamp">{{ 'conflicts.editedAgo' | translate: { time: relativeTime(entry.localTime) } }}</span>
+              <button class="pick-btn" type="button" (click)="resolve(entry, 'local')">{{ 'conflicts.useThis' | translate }}</button>
             </div>
             <div class="side">
-              <span class="side-label">El otro dispositivo</span>
+              <span class="side-label">{{ 'conflicts.otherDevice' | translate }}</span>
               @for (fact of entry.serverFacts; track fact) {
                 <span class="side-fact">{{ fact }}</span>
               }
-              <span class="timestamp">Editado {{ relativeTime(entry.serverTime) }}</span>
-              <button class="pick-btn" type="button" (click)="resolve(entry, 'server')">Usar esta ▸</button>
+              <span class="timestamp">{{ 'conflicts.editedAgo' | translate: { time: relativeTime(entry.serverTime) } }}</span>
+              <button class="pick-btn" type="button" (click)="resolve(entry, 'server')">{{ 'conflicts.useThis' | translate }}</button>
             </div>
           </div>
         </div>
@@ -69,7 +69,7 @@
     }
 
     @if (pendingCount() === 0) {
-      <ion-button expand="block" (click)="goToAccount()">Volver a Cuenta</ion-button>
+      <ion-button expand="block" (click)="goToAccount()">{{ 'conflicts.backToAccount' | translate }}</ion-button>
     }
   }
 </ion-content>

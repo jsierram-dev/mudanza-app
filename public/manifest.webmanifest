@@ -1,13 +1,13 @@
 {
   "name": "Mudanza",
   "short_name": "Mudanza",
-  "description": "Organizá tus pertenencias durante una mudanza: cajas, fotos de cada artículo, y buscador.",
+  "description": "Organize your belongings during a move: boxes, a photo of each item, and search.",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",
   "theme_color": "#d5461e",
   "background_color": "#ede3d0",
-  "lang": "es",
+  "lang": "en",
   "icons": [
     {
       "src": "icons/icon-72x72.png",

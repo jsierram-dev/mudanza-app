@@ -5,7 +5,7 @@
         <ion-icon name="close-outline" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>Nuevo artículo</ion-title>
+    <ion-title>{{ 'registerItem.title' | translate }}</ion-title>
     <ion-buttons slot="end">
       @if (selectedBox(); as b) {
         <span class="crate-badge">{{ formatNumber(b.number) }}</span>
@@ -22,12 +22,12 @@
         <span class="corner tl"></span><span class="corner tr"></span>
         <span class="corner bl"></span><span class="corner br"></span>
         <ion-icon name="image-outline"></ion-icon>
-        <span>Encuadra el objeto</span>
+        <span>{{ 'registerItem.frameHint' | translate }}</span>
       </div>
       <button class="shutter" type="button" (click)="takePhoto()" [disabled]="capturing()">
         <ion-icon name="camera-outline"></ion-icon>
       </button>
-      <p class="hint">Toma una foto del artículo</p>
+      <p class="hint">{{ 'registerItem.takePhotoHint' | translate }}</p>
     </div>
   } @else {
     <div class="paso-formulario">
@@ -35,28 +35,34 @@
         <div class="thumb-wrap">
           <span class="tape-strip sm"></span>
           @if (photoUri(); as uri) {
-            <app-photo [uri]="uri" alt="Foto del artículo" />
+            <app-photo [uri]="uri" [alt]="'registerItem.photoAlt' | translate" />
           }
         </div>
-        <button class="chip" type="button" (click)="takePhoto()">Cambiar foto</button>
+        <button class="chip" type="button" (click)="takePhoto()">{{ 'registerItem.changePhoto' | translate }}</button>
       </div>
 
-      <label class="field-label" for="campo-nombre">Nombre</label>
-      <ion-input id="campo-nombre" fill="outline" placeholder="Ej. Sartén grande" [value]="name()" (ionInput)="updateName($event)"></ion-input>
+      <label class="field-label" for="campo-nombre">{{ 'registerItem.nameLabel' | translate }}</label>
+      <ion-input
+        id="campo-nombre"
+        fill="outline"
+        [placeholder]="'registerItem.namePlaceholder' | translate"
+        [value]="name()"
+        (ionInput)="updateName($event)"
+      ></ion-input>
 
-      <label class="field-label" for="campo-peso">Peso (kg) · opcional</label>
+      <label class="field-label" for="campo-peso">{{ 'registerItem.weightLabel' | translate }}</label>
       <ion-input id="campo-peso" type="number" fill="outline" placeholder="0.0" [value]="weightKg()" (ionInput)="updateWeight($event)"></ion-input>
 
       <div class="toggle-row">
-        <span>Frágil</span>
+        <span>{{ 'common.fragile' | translate }}</span>
         <ion-toggle [checked]="fragile()" (ionChange)="updateFragile($event)"></ion-toggle>
       </div>
       <div class="toggle-row">
-        <span>Esencial</span>
+        <span>{{ 'common.essential' | translate }}</span>
         <ion-toggle [checked]="essential()" (ionChange)="updateEssential($event)"></ion-toggle>
       </div>
 
-      <span class="field-label">Categorías</span>
+      <span class="field-label">{{ 'common.categoriesLabel' | translate }}</span>
       <div class="chips-wrap">
         @for (category of categories(); track category.id) {
           <button
@@ -65,26 +71,26 @@
             [class.selected]="selectedCategories().has(category.id)"
             (click)="toggleCategory(category.id)"
           >
-            {{ category.name }}
+            {{ categoryLabel(category) }}
           </button>
         }
       </div>
 
       <hr class="divider" />
 
-      <span class="field-label">Asignar a caja</span>
+      <span class="field-label">{{ 'registerItem.assignToBoxLabel' | translate }}</span>
       <button class="asignar-fila" type="button" (click)="chooseBox()">
         @if (selectedBox(); as b) {
-          <span>Caja #{{ b.number }} · {{ b.destinationRoom || 'sin habitación' }}</span>
+          <span>{{ selectedBoxLabel(b) }}</span>
         } @else {
-          <span class="muted">Sin asignar — tocá para elegir una caja</span>
+          <span class="muted">{{ 'registerItem.unassignedHint' | translate }}</span>
         }
         <span>▾</span>
       </button>
 
       @if (selectedBox()) {
         <div class="asignar-fila">
-          <span>Cantidad</span>
+          <span>{{ 'registerItem.quantityLabel' | translate }}</span>
           <div class="stepper">
             <button type="button" (click)="decrementQuantity()">−</button>
             <span>{{ quantity() }}</span>
@@ -94,7 +100,7 @@
       }
 
       <button class="btn-primario" type="button" (click)="save()" [disabled]="!name().trim()">
-        Guardar artículo
+        {{ 'registerItem.saveButton' | translate }}
       </button>
     </div>
   }

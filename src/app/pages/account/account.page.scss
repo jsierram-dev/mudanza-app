@@ -17,6 +17,30 @@
   margin: 0 0 1.25rem;
 }
 
+.chips-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+}
+
+.chip {
+  font-family: var(--mv-font-display);
+  font-size: 0.75rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 5px;
+  border: 1.5px solid var(--mv-line);
+  background: var(--mv-panel);
+  color: var(--mv-muted);
+
+  &.selected {
+    border-color: var(--mv-accent);
+    background: var(--mv-accent);
+    color: var(--mv-accent-ink);
+    font-weight: 700;
+  }
+}
+
 .boton-google {
   display: flex;
   justify-content: center;

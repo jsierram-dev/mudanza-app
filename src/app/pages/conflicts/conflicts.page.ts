@@ -11,8 +11,11 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import type { ViewWillEnter } from '@ionic/angular/standalone';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
+import { TranslationKey } from '../../core/i18n/en';
 import { BoxDto, ConflictDto, ItemDto } from '../../core/models/sync-dto.model';
-import { ConflictKind, CONFLICT_KINDS, SyncService } from '../../core/services';
+import { ConflictKind, CONFLICT_KINDS, SyncService, TranslationService } from '../../core/services';
+import { boxStatusKey } from '../../core/utils/box-status';
 import { formatRelativeTime } from '../../core/utils/relative-time';
 
 interface ConflictEntry {
@@ -28,21 +31,21 @@ interface ConflictEntry {
 }
 
 type Side = 'local' | 'server';
+type TFn = (key: TranslationKey, params?: Record<string, string | number>) => string;
 
-function boxFacts(dto: BoxDto): string[] {
-  const status = dto.status.replace('_', ' ');
-  return [status, dto.destinationRoom || 'Sin habitación'];
+function boxFacts(dto: BoxDto, t: TFn): string[] {
+  return [t(boxStatusKey(dto.status)), dto.destinationRoom || t('common.noRoom')];
 }
 
-function itemFacts(dto: ItemDto): string[] {
-  const facts = [dto.weightKg ? `${dto.weightKg} kg` : 'Sin peso'];
-  if (dto.fragile) facts.push('Frágil');
-  if (dto.essential) facts.push('Esencial');
+function itemFacts(dto: ItemDto, t: TFn): string[] {
+  const facts = [dto.weightKg ? `${dto.weightKg} kg` : t('conflicts.noWeight')];
+  if (dto.fragile) facts.push(t('common.fragile'));
+  if (dto.essential) facts.push(t('common.essential'));
   return facts;
 }
 
 /** Arma lo que hace falta para mostrar un conflicto de cualquiera de las 6 entidades sin repetir esto por pantalla. */
-function describeConflict(kind: ConflictKind, conflict: ConflictDto<unknown>): Omit<ConflictEntry, 'resolved'> {
+function describeConflict(kind: ConflictKind, conflict: ConflictDto<unknown>, t: TFn): Omit<ConflictEntry, 'resolved'> {
   const local = conflict.local as any;
   const server = conflict.server as any;
 
@@ -51,8 +54,8 @@ function describeConflict(kind: ConflictKind, conflict: ConflictDto<unknown>): O
       return {
         kind,
         conflict,
-        typeLabel: 'Mudanza',
-        title: 'Nombre de la mudanza',
+        typeLabel: t('conflicts.kindMove'),
+        title: t('conflicts.moveNameTitle'),
         localFacts: [`"${local.name}"`],
         serverFacts: [`"${server.name}"`],
         localTime: local.updatedAt,
@@ -62,8 +65,8 @@ function describeConflict(kind: ConflictKind, conflict: ConflictDto<unknown>): O
       return {
         kind,
         conflict,
-        typeLabel: 'Categoría',
-        title: 'Nombre de la categoría',
+        typeLabel: t('conflicts.kindCategory'),
+        title: t('conflicts.categoryNameTitle'),
         localFacts: [`"${local.name}"`],
         serverFacts: [`"${server.name}"`],
         localTime: local.updatedAt,
@@ -73,10 +76,10 @@ function describeConflict(kind: ConflictKind, conflict: ConflictDto<unknown>): O
       return {
         kind,
         conflict,
-        typeLabel: 'Caja',
-        title: `Caja #${local.number}`,
-        localFacts: boxFacts(local),
-        serverFacts: boxFacts(server),
+        typeLabel: t('conflicts.kindBox'),
+        title: t('common.boxNumber', { number: local.number }),
+        localFacts: boxFacts(local, t),
+        serverFacts: boxFacts(server, t),
         localTime: local.updatedAt,
         serverTime: server.updatedAt,
       };
@@ -84,10 +87,10 @@ function describeConflict(kind: ConflictKind, conflict: ConflictDto<unknown>): O
       return {
         kind,
         conflict,
-        typeLabel: 'Artículo',
+        typeLabel: t('conflicts.kindItem'),
         title: local.name,
-        localFacts: itemFacts(local),
-        serverFacts: itemFacts(server),
+        localFacts: itemFacts(local, t),
+        serverFacts: itemFacts(server, t),
         localTime: local.updatedAt,
         serverTime: server.updatedAt,
       };
@@ -95,10 +98,10 @@ function describeConflict(kind: ConflictKind, conflict: ConflictDto<unknown>): O
       return {
         kind,
         conflict,
-        typeLabel: 'Categoría de artículo',
-        title: 'Vínculo artículo–categoría',
-        localFacts: [local.deletedAt ? 'Quitada' : 'Asignada'],
-        serverFacts: [server.deletedAt ? 'Quitada' : 'Asignada'],
+        typeLabel: t('conflicts.kindItemCategory'),
+        title: t('conflicts.itemCategoryLinkTitle'),
+        localFacts: [local.deletedAt ? t('conflicts.removed') : t('conflicts.assigned')],
+        serverFacts: [server.deletedAt ? t('conflicts.removed') : t('conflicts.assigned')],
         localTime: local.updatedAt,
         serverTime: server.updatedAt,
       };
@@ -106,10 +109,10 @@ function describeConflict(kind: ConflictKind, conflict: ConflictDto<unknown>): O
       return {
         kind,
         conflict,
-        typeLabel: 'Asignación a caja',
-        title: 'Cantidad en la caja',
-        localFacts: [local.deletedAt ? 'Quitado de la caja' : `Cantidad: ${local.quantity}`],
-        serverFacts: [server.deletedAt ? 'Quitado de la caja' : `Cantidad: ${server.quantity}`],
+        typeLabel: t('conflicts.kindBoxAssignment'),
+        title: t('conflicts.boxAssignmentQtyTitle'),
+        localFacts: [local.deletedAt ? t('conflicts.removedFromBox') : t('boxDetail.quantityLine', { n: local.quantity })],
+        serverFacts: [server.deletedAt ? t('conflicts.removedFromBox') : t('boxDetail.quantityLine', { n: server.quantity })],
         localTime: local.updatedAt,
         serverTime: server.updatedAt,
       };
@@ -127,11 +130,12 @@ function describeConflict(kind: ConflictKind, conflict: ConflictDto<unknown>): O
   selector: 'app-conflicts',
   templateUrl: './conflicts.page.html',
   styleUrl: './conflicts.page.scss',
-  imports: [IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton, IonContent, IonButton, IonIcon],
+  imports: [IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton, IonContent, IonButton, IonIcon, TranslatePipe],
 })
 export class ConflictsPage implements ViewWillEnter {
   private readonly syncService = inject(SyncService);
   private readonly router = inject(Router);
+  private readonly i18n = inject(TranslationService);
 
   readonly entries = signal<ConflictEntry[]>([]);
   readonly pendingCount = computed(() => this.entries().filter((e) => e.resolved === null).length);
@@ -147,17 +151,18 @@ export class ConflictsPage implements ViewWillEnter {
       return;
     }
 
+    const t: TFn = (key, params) => this.i18n.t(key, params);
     const flat: ConflictEntry[] = [];
     for (const kind of CONFLICT_KINDS) {
       for (const conflict of stored[kind] as ConflictDto<unknown>[]) {
-        flat.push({ ...describeConflict(kind, conflict), resolved: null });
+        flat.push({ ...describeConflict(kind, conflict, t), resolved: null });
       }
     }
     this.entries.set(flat);
   }
 
   relativeTime(iso: string): string {
-    return formatRelativeTime(iso);
+    return formatRelativeTime(iso, (key, params) => this.i18n.t(key, params));
   }
 
   async resolve(entry: ConflictEntry, side: Side): Promise<void> {

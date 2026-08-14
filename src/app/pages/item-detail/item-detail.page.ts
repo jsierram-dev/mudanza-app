@@ -13,8 +13,10 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import type { ViewWillEnter } from '@ionic/angular/standalone';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { Item } from '../../core/models';
-import { BoxAssignmentService, BoxService, CategoryService, ItemCategoryService, ItemService } from '../../core/services';
+import { BoxAssignmentService, BoxService, CategoryService, ItemCategoryService, ItemService, TranslationService } from '../../core/services';
+import { categoryDisplayName } from '../../core/utils/category-label';
 import { AccountButtonComponent } from '../../shared/account-button/account-button.component';
 import { PhotoComponent } from '../../shared/photo/photo.component';
 
@@ -41,6 +43,7 @@ interface ItemLocation {
     PhotoComponent,
     DatePipe,
     AccountButtonComponent,
+    TranslatePipe,
   ],
 })
 export class ItemDetailPage implements ViewWillEnter {
@@ -53,6 +56,7 @@ export class ItemDetailPage implements ViewWillEnter {
   private readonly categoryService = inject(CategoryService);
   private readonly boxService = inject(BoxService);
   private readonly alertController = inject(AlertController);
+  private readonly i18n = inject(TranslationService);
 
   private moveId = '';
   private itemId = '';
@@ -77,7 +81,9 @@ export class ItemDetailPage implements ViewWillEnter {
 
     this.item.set(item);
     this.categoryNames.set(
-      allCategories.filter((c) => categoryIds.includes(c.id)).map((c) => c.name),
+      allCategories
+        .filter((c) => categoryIds.includes(c.id))
+        .map((c) => categoryDisplayName(c, (key) => this.i18n.t(key))),
     );
 
     const locations = await Promise.all(
@@ -106,12 +112,12 @@ export class ItemDetailPage implements ViewWillEnter {
     if (!currentItem) return;
 
     const alert = await this.alertController.create({
-      header: 'Borrar artículo',
-      message: `¿Seguro que querés borrar "${currentItem.name}"? Esta acción no se puede deshacer.`,
+      header: this.i18n.t('itemDetail.deleteHeader'),
+      message: this.i18n.t('itemDetail.deleteConfirm', { name: currentItem.name }),
       buttons: [
-        { text: 'Cancelar', role: 'cancel' },
+        { text: this.i18n.t('common.cancel'), role: 'cancel' },
         {
-          text: 'Borrar',
+          text: this.i18n.t('common.delete'),
           role: 'destructive',
           handler: async () => {
             await this.itemService.delete(currentItem.id);

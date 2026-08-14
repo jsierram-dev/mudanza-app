@@ -12,7 +12,7 @@
 
 <ion-content class="ion-padding">
   @if (boxes().length === 0) {
-    <p class="empty">Todavía no hay cajas en esta mudanza.</p>
+    <p class="empty">{{ 'boxes.empty' | translate }}</p>
   }
 
   <div class="grid">
@@ -23,10 +23,10 @@
           @if (isDefaultPhoto(item.box.coverPhotoUri)) {
             <ion-icon name="image-outline"></ion-icon>
           } @else {
-            <app-photo [uri]="item.box.coverPhotoUri" [alt]="'Caja #' + item.box.number" />
+            <app-photo [uri]="item.box.coverPhotoUri" [alt]="'common.boxNumber' | translate: { number: item.box.number }" />
           }
         </span>
-        <span class="cname">{{ item.box.destinationRoom || item.box.name || 'Sin habitación' }}</span>
+        <span class="cname">{{ item.box.destinationRoom || item.box.name || ('common.noRoom' | translate) }}</span>
         <span class="stat-pill" [class.is-on]="isActive(item.box.status)">
           <span class="led"></span>{{ formatStatus(item.box.status) }}
         </span>

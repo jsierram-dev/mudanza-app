@@ -15,7 +15,9 @@ import {
 } from '@ionic/angular/standalone';
 import type { ViewWillEnter } from '@ionic/angular/standalone';
 import { environment } from '../../../environments/environment';
-import { AuthService, SyncService } from '../../core/services';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
+import { Locale } from '../../core/i18n/locale';
+import { AuthService, SyncService, TranslationService } from '../../core/services';
 
 function loadGoogleIdentityScript(): Promise<void> {
   if (document.getElementById('google-identity-script')) return Promise.resolve();
@@ -52,6 +54,7 @@ function loadGoogleIdentityScript(): Promise<void> {
     IonSpinner,
     RouterLink,
     DatePipe,
+    TranslatePipe,
   ],
 })
 export class AccountPage implements AfterViewInit, ViewWillEnter {
@@ -59,6 +62,7 @@ export class AccountPage implements AfterViewInit, ViewWillEnter {
 
   protected readonly auth = inject(AuthService);
   protected readonly sync = inject(SyncService);
+  protected readonly i18n = inject(TranslationService);
   private readonly toastController = inject(ToastController);
   private readonly injector = inject(Injector);
 
@@ -108,8 +112,12 @@ export class AccountPage implements AfterViewInit, ViewWillEnter {
         width: 320,
       });
     } catch {
-      this.loginError.set('No se pudo cargar el inicio de sesión de Google.');
+      this.loginError.set(this.i18n.t('account.googleLoadError'));
     }
+  }
+
+  setLocale(locale: Locale): void {
+    this.i18n.setLocale(locale);
   }
 
   private async handleGoogleCredential(idToken: string): Promise<void> {
@@ -119,7 +127,7 @@ export class AccountPage implements AfterViewInit, ViewWillEnter {
       await this.auth.loginWithGoogle(idToken);
       await this.syncNow();
     } catch {
-      this.loginError.set('No se pudo iniciar sesión con Google.');
+      this.loginError.set(this.i18n.t('account.googleLoginError'));
     } finally {
       this.loggingIn.set(false);
     }
@@ -140,8 +148,8 @@ export class AccountPage implements AfterViewInit, ViewWillEnter {
     if (result.ok) {
       const message =
         result.conflicts > 0
-          ? `Sincronizado — ${result.conflicts} cambio(s) en conflicto sin resolver todavía`
-          : 'Sincronizado';
+          ? this.i18n.t('account.syncedWithConflicts', { n: result.conflicts })
+          : this.i18n.t('account.synced');
       const toast = await this.toastController.create({
         message,
         duration: 2500,
@@ -153,7 +161,7 @@ export class AccountPage implements AfterViewInit, ViewWillEnter {
 
     if (result.reason === 'error') {
       const toast = await this.toastController.create({
-        message: 'No se pudo sincronizar. Revisá tu conexión e intentá de nuevo.',
+        message: this.i18n.t('account.syncError'),
         duration: 3000,
         color: 'danger',
       });

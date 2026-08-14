@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { IonApp, IonRouterOutlet, ToastController } from '@ionic/angular/standalone';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter } from 'rxjs/operators';
-import { AuthService, SyncService } from './core/services';
+import { AuthService, SyncService, TranslationService } from './core/services';
 
 @Component({
   selector: 'app-root',
@@ -14,6 +14,7 @@ export class AppComponent implements OnInit {
   private readonly syncService = inject(SyncService);
   private readonly swUpdate = inject(SwUpdate);
   private readonly toastController = inject(ToastController);
+  private readonly i18n = inject(TranslationService);
 
   /**
    * Trigger automático al abrir (decidido 2026-08-12, ver ROADMAP-mudanza.md)
@@ -53,12 +54,12 @@ export class AppComponent implements OnInit {
 
   private async promptReload(): Promise<void> {
     const toast = await this.toastController.create({
-      message: 'Hay una actualización de la app disponible.',
+      message: this.i18n.t('common.updateAvailable'),
       position: 'top',
       color: 'medium',
       buttons: [
         {
-          text: 'Actualizar',
+          text: this.i18n.t('common.update'),
           handler: async () => {
             await this.swUpdate.activateUpdate().catch(() => undefined);
             document.location.reload();

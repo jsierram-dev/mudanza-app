@@ -14,8 +14,10 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import type { ViewWillEnter } from '@ionic/angular/standalone';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { Box, BoxStatus } from '../../core/models';
-import { BoxService, DEFAULT_COVER_PHOTO, MoveService } from '../../core/services';
+import { BoxService, DEFAULT_COVER_PHOTO, MoveService, TranslationService } from '../../core/services';
+import { boxStatusKey } from '../../core/utils/box-status';
 import { formatWeight } from '../../core/utils/weight';
 import { AccountButtonComponent } from '../../shared/account-button/account-button.component';
 import { PhotoComponent } from '../../shared/photo/photo.component';
@@ -41,6 +43,7 @@ interface BoxWithWeight {
     IonIcon,
     PhotoComponent,
     AccountButtonComponent,
+    TranslatePipe,
   ],
 })
 export class BoxesPage implements ViewWillEnter {
@@ -49,6 +52,7 @@ export class BoxesPage implements ViewWillEnter {
   private readonly boxService = inject(BoxService);
   private readonly moveService = inject(MoveService);
   private readonly alertController = inject(AlertController);
+  private readonly i18n = inject(TranslationService);
 
   private readonly moveId = this.route.snapshot.paramMap.get('moveId')!;
 
@@ -80,7 +84,7 @@ export class BoxesPage implements ViewWillEnter {
       this.moveService.getById(this.moveId),
       this.boxService.getByMove(this.moveId),
     ]);
-    this.moveTitle.set(move?.name ?? 'Mudanza');
+    this.moveTitle.set(move?.name ?? this.i18n.t('common.appName'));
 
     const sorted = boxes.sort((a, b) => a.number - b.number);
     const withWeight = await Promise.all(
@@ -102,7 +106,7 @@ export class BoxesPage implements ViewWillEnter {
   }
 
   formatStatus(status: BoxStatus): string {
-    return status.replace('_', ' ');
+    return this.i18n.t(boxStatusKey(status));
   }
 
   /** empty es el único estado sin ninguna actividad todavía — el resto se marca como "en curso". */
@@ -116,15 +120,15 @@ export class BoxesPage implements ViewWillEnter {
 
   async newBox(): Promise<void> {
     const alert = await this.alertController.create({
-      header: 'Nueva caja',
+      header: this.i18n.t('boxes.newBoxHeader'),
       inputs: [
-        { name: 'destinationRoom', type: 'text', placeholder: 'Habitación (ej. Cocina)' },
-        { name: 'name', type: 'text', placeholder: 'Nombre (opcional)' },
+        { name: 'destinationRoom', type: 'text', placeholder: this.i18n.t('boxes.roomPlaceholder') },
+        { name: 'name', type: 'text', placeholder: this.i18n.t('boxes.namePlaceholder') },
       ],
       buttons: [
-        { text: 'Cancelar', role: 'cancel' },
+        { text: this.i18n.t('common.cancel'), role: 'cancel' },
         {
-          text: 'Crear',
+          text: this.i18n.t('common.create'),
           handler: async (data) => {
             await this.boxService.create(this.moveId, {
               destinationRoom: (data.destinationRoom ?? '').trim() || undefined,

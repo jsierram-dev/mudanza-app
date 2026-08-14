@@ -3,6 +3,7 @@ import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { IonButtons, IonContent, IonHeader, IonSearchbar, IonToolbar } from '@ionic/angular/standalone';
 import type { SearchbarCustomEvent, ViewWillEnter } from '@ionic/angular/standalone';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { Item } from '../../core/models';
 import { BoxAssignmentService, BoxService, ItemService } from '../../core/services';
 import { AccountButtonComponent } from '../../shared/account-button/account-button.component';
@@ -23,7 +24,7 @@ interface SearchResult {
   selector: 'app-search',
   templateUrl: './search.page.html',
   styleUrl: './search.page.scss',
-  imports: [IonHeader, IonToolbar, IonButtons, IonContent, IonSearchbar, PhotoComponent, AccountButtonComponent],
+  imports: [IonHeader, IonToolbar, IonButtons, IonContent, IonSearchbar, PhotoComponent, AccountButtonComponent, TranslatePipe],
 })
 export class SearchPage implements ViewWillEnter {
   private readonly route = inject(ActivatedRoute);

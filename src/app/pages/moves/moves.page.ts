@@ -15,8 +15,9 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import type { ViewWillEnter } from '@ionic/angular/standalone';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { Move } from '../../core/models';
-import { MoveService } from '../../core/services';
+import { MoveService, TranslationService } from '../../core/services';
 import { AccountButtonComponent } from '../../shared/account-button/account-button.component';
 
 @Component({
@@ -35,6 +36,7 @@ import { AccountButtonComponent } from '../../shared/account-button/account-butt
     IonIcon,
     AccountButtonComponent,
     DatePipe,
+    TranslatePipe,
   ],
 })
 export class MovesPage implements ViewWillEnter {
@@ -42,6 +44,7 @@ export class MovesPage implements ViewWillEnter {
   private readonly router = inject(Router);
   private readonly alertController = inject(AlertController);
   private readonly actionSheetController = inject(ActionSheetController);
+  private readonly i18n = inject(TranslationService);
 
   readonly moves = signal<Move[]>([]);
 
@@ -61,12 +64,12 @@ export class MovesPage implements ViewWillEnter {
 
   async newMove(): Promise<void> {
     const alert = await this.alertController.create({
-      header: 'Nueva mudanza',
-      inputs: [{ name: 'name', type: 'text', placeholder: 'Ej. Casa nueva — Alicante' }],
+      header: this.i18n.t('moves.newMoveHeader'),
+      inputs: [{ name: 'name', type: 'text', placeholder: this.i18n.t('moves.namePlaceholder') }],
       buttons: [
-        { text: 'Cancelar', role: 'cancel' },
+        { text: this.i18n.t('common.cancel'), role: 'cancel' },
         {
-          text: 'Crear',
+          text: this.i18n.t('common.create'),
           handler: async (data) => {
             const name = (data.name ?? '').trim();
             if (!name) return false;
@@ -85,9 +88,9 @@ export class MovesPage implements ViewWillEnter {
     const sheet = await this.actionSheetController.create({
       header: move.name,
       buttons: [
-        { text: 'Editar nombre', handler: () => this.editMove(move) },
-        { text: 'Borrar mudanza', role: 'destructive', handler: () => this.confirmDeleteMove(move) },
-        { text: 'Cancelar', role: 'cancel' },
+        { text: this.i18n.t('moves.editNameHeader'), handler: () => this.editMove(move) },
+        { text: this.i18n.t('moves.deleteHeader'), role: 'destructive', handler: () => this.confirmDeleteMove(move) },
+        { text: this.i18n.t('common.cancel'), role: 'cancel' },
       ],
     });
     await sheet.present();
@@ -95,12 +98,12 @@ export class MovesPage implements ViewWillEnter {
 
   private async editMove(move: Move): Promise<void> {
     const alert = await this.alertController.create({
-      header: 'Editar nombre',
-      inputs: [{ name: 'name', type: 'text', value: move.name, placeholder: 'Ej. Casa nueva — Alicante' }],
+      header: this.i18n.t('moves.editNameHeader'),
+      inputs: [{ name: 'name', type: 'text', value: move.name, placeholder: this.i18n.t('moves.namePlaceholder') }],
       buttons: [
-        { text: 'Cancelar', role: 'cancel' },
+        { text: this.i18n.t('common.cancel'), role: 'cancel' },
         {
-          text: 'Guardar',
+          text: this.i18n.t('common.save'),
           handler: async (data) => {
             const name = (data.name ?? '').trim();
             if (!name) return false;
@@ -121,12 +124,12 @@ export class MovesPage implements ViewWillEnter {
    */
   private async confirmDeleteMove(move: Move): Promise<void> {
     const alert = await this.alertController.create({
-      header: 'Borrar mudanza',
-      message: `¿Seguro que querés borrar «${move.name}»? Se van a borrar también todas sus cajas. Los artículos no se borran — quedan sin asignar. Esta acción no se puede deshacer.`,
+      header: this.i18n.t('moves.deleteHeader'),
+      message: this.i18n.t('moves.deleteConfirm', { name: move.name }),
       buttons: [
-        { text: 'Cancelar', role: 'cancel' },
+        { text: this.i18n.t('common.cancel'), role: 'cancel' },
         {
-          text: 'Borrar',
+          text: this.i18n.t('common.delete'),
           role: 'destructive',
           handler: async () => {
             await this.moveService.delete(move.id);
