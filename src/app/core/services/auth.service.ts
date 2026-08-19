@@ -1,8 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, timeout } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AuthUser } from '../models/auth-user.model';
+
+// Mismo bug/fix que SyncService/PhotoService (ver ROADMAP-mudanza.md,
+// 2026-08-19): sin timeout, un login trabado (jp-back-auth en cold start,
+// wifi inestable) dejaba "Iniciando sesión..." colgado para siempre.
+const LOGIN_TIMEOUT_MS = 60_000;
 
 interface LoginResponse {
   user: AuthUser;
@@ -45,7 +50,7 @@ export class AuthService {
     // 2026-08-13: esto pegaba contra apiBaseUrl y 404eaba siempre — ver
     // ROADMAP-mudanza.md.
     const response = await firstValueFrom(
-      this.http.post<LoginResponse>(`${environment.authBaseUrl}/auth/google`, { idToken }),
+      this.http.post<LoginResponse>(`${environment.authBaseUrl}/auth/google`, { idToken }).pipe(timeout(LOGIN_TIMEOUT_MS)),
     );
     this.persistSession(response);
     return response.user;

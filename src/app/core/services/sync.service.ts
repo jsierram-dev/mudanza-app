@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, timeout } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Item } from '../models/item.model';
 import { Box, BoxStatus } from '../models/box.model';
@@ -17,6 +17,17 @@ import { StorageService } from './storage.service';
 
 const KEY_LAST_SYNCED_AT = 'last_synced_at';
 const KEY_PENDING_CONFLICTS = 'pending_conflicts';
+
+/**
+ * Bug real encontrado 2026-08-19: ninguna llamada HTTP de sync tenía timeout
+ * — Angular's HttpClient no corta sola una request que se cuelga (wifi
+ * inestable, Render en cold start, lo que sea). Sin esto, un solo request
+ * trabado dejaba `syncing` en true para siempre (el botón "Sincronizando
+ * ahora..." no se recupera solo — ver ROADMAP-mudanza.md). 60s da margen de
+ * sobra para el cold start de Render free tier (unos segundos, no más) sin
+ * dejar al usuario esperando indefinidamente si de verdad se colgó.
+ */
+const SYNC_TIMEOUT_MS = 60_000;
 
 export type SyncResult =
   | { ok: true; conflicts: number }
@@ -117,7 +128,7 @@ export class SyncService {
       };
 
       const response = await firstValueFrom(
-        this.http.post<SyncResponseBody>(`${environment.apiBaseUrl}/sync`, body),
+        this.http.post<SyncResponseBody>(`${environment.apiBaseUrl}/sync`, body).pipe(timeout(SYNC_TIMEOUT_MS)),
       );
 
       await this.applyResponse(response);

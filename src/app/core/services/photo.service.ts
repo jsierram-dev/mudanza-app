@@ -3,11 +3,19 @@ import { Injectable, inject } from '@angular/core';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Capacitor } from '@capacitor/core';
 import { Directory, Filesystem } from '@capacitor/filesystem';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, timeout } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { StorageService } from './storage.service';
 
 const RE_PHOTO_ID = /^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\.[a-z0-9]+$/i;
+
+// Mismo bug/fix que SyncService (ver ROADMAP-mudanza.md, 2026-08-19): sin
+// timeout, una sola foto trabada (wifi inestable, cold start de Render)
+// dejaba colgado uploadIfNeeded()/downloadIfNeeded() para siempre — y como
+// SyncService los llama en Promise.all, UNA foto trabada bloqueaba el sync
+// entero, no solo esa foto. attempt() ya atrapa el rechazo y sigue con las
+// demás; lo que faltaba era que la llamada llegara a rechazar alguna vez.
+const PHOTO_TIMEOUT_MS = 45_000;
 
 @Injectable({ providedIn: 'root' })
 export class PhotoService {
@@ -126,7 +134,7 @@ export class PhotoService {
     const form = new FormData();
     form.append('photo', blob, `${photoId}.jpeg`);
 
-    await firstValueFrom(this.http.put(`${environment.apiBaseUrl}/photos/${photoId}`, form));
+    await firstValueFrom(this.http.put(`${environment.apiBaseUrl}/photos/${photoId}`, form).pipe(timeout(PHOTO_TIMEOUT_MS)));
     await this.markUploaded(photoId);
     return photoId;
   }
@@ -142,7 +150,7 @@ export class PhotoService {
     if (await this.existsLocally(fileName)) return fileName;
 
     const blob = await firstValueFrom(
-      this.http.get(`${environment.apiBaseUrl}/photos/${photoId}`, { responseType: 'blob' }),
+      this.http.get(`${environment.apiBaseUrl}/photos/${photoId}`, { responseType: 'blob' }).pipe(timeout(PHOTO_TIMEOUT_MS)),
     );
     const base64 = await blobToBase64(blob);
     await Filesystem.writeFile({ path: fileName, data: base64, directory: Directory.Data });
